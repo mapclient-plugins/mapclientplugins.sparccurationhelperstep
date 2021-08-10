@@ -8,6 +8,7 @@ from PySide2 import QtGui
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.sparccurationhelperstep.configuredialog import ConfigureDialog
+from mapclientplugins.sparccurationhelperstep.sparccurationhelperwidget import SparcCurationHelperWidget
 
 
 class SparcCurationHelperStep(WorkflowStepMountPoint):
@@ -25,20 +26,22 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         # Ports:
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      '<not-set>'))
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#directory_location'))
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
-                      '<not-set>'))
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
-                      '<not-set>'))
+                      'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
         # Port data:
-        self._portData0 = None # <not-set>
+        self._port0_inputFileDir = None # <not-set>
         self._portData1 = None # <not-set>
         self._portData2 = None # <not-set>
         # Config:
         self._config = {}
         self._config['identifier'] = ''
+        self._model = None
+        self._view = None
 
     def execute(self):
         """
@@ -47,7 +50,10 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         may be connected up to a button in a widget for example.
         """
         # Put your execute step code here before calling the '_doneExecution' method.
-        self._doneExecution()
+        # self._model = SparcCurationHelperWidget(self._portData0, self._location, self._config['identifier'])
+        self._view = SparcCurationHelperWidget(None, self._port0_inputFileDir)
+        self._view.registerDoneExecution(self._doneExecution)
+        self._setCurrentWidget(self._view)
 
     def setPortData(self, index, dataIn):
         """
@@ -59,7 +65,7 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         :param dataIn: The data to set for the port at the given index.
         """
         if index == 0:
-            self._portData0 = dataIn # <not-set>
+            self._port0_inputFileDir = dataIn # <not-set>
         elif index == 1:
             self._portData1 = dataIn # <not-set>
 

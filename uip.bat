@@ -1,0 +1,4 @@
+call C:\Users\ywan787\pyvenv\venv39\Scripts\activate
+pyside2-uic -o mapclientplugins\sparccurationhelperstep\ui_sparccurationhelperwidget.py mapclientplugins\sparccurationhelperstep\qt\sparccurationhelperwidget.ui
+pyside2-uic -o mapclientplugins\sparccurationhelperstep\ui_configuredialog.py mapclientplugins\sparccurationhelperstep\qt\configuredialog.ui
+@REM pyside2-rcc -o mapclientplugins\sparccurationhelperstep\resources_rc.py mapclientplugins\sparccurationhelperstep\qt\resources.qrc
