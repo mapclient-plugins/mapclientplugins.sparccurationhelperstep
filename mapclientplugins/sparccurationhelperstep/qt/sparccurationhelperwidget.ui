@@ -74,9 +74,9 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="fixAllErrors_btn">
               <property name="text">
-               <string>PushButton</string>
+               <string>Fix All Errors</string>
               </property>
              </widget>
             </item>
@@ -88,7 +88,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="fixError_btn">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -96,7 +96,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>PushButton</string>
+               <string>Fix Error</string>
               </property>
              </widget>
             </item>

@@ -65,22 +65,22 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.gridLayout_2.addWidget(self.annotate_scaffold_button, 1, 1, 1, 1)
 
-        self.pushButton_2 = QPushButton(self.groupBox1)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.fixAllErrors_btn = QPushButton(self.groupBox1)
+        self.fixAllErrors_btn.setObjectName(u"fixAllErrors_btn")
 
-        self.gridLayout_2.addWidget(self.pushButton_2, 2, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.fixAllErrors_btn, 2, 0, 1, 1)
 
         self.pushButton_3 = QPushButton(self.groupBox1)
         self.pushButton_3.setObjectName(u"pushButton_3")
 
         self.gridLayout_2.addWidget(self.pushButton_3, 2, 1, 1, 1)
 
-        self.pushButton = QPushButton(self.groupBox1)
-        self.pushButton.setObjectName(u"pushButton")
-        sizePolicy1.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy1)
+        self.fixError_btn = QPushButton(self.groupBox1)
+        self.fixError_btn.setObjectName(u"fixError_btn")
+        sizePolicy1.setHeightForWidth(self.fixError_btn.sizePolicy().hasHeightForWidth())
+        self.fixError_btn.setSizePolicy(sizePolicy1)
 
-        self.gridLayout_2.addWidget(self.pushButton, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.fixError_btn, 1, 0, 1, 1)
 
         self.label = QLabel(self.groupBox1)
         self.label.setObjectName(u"label")
@@ -154,9 +154,9 @@ class Ui_SparcCurationHelperWidget(object):
         self.scaffold_annotation_label.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
         self.groupBox1.setTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Errors:", None))
         self.annotate_scaffold_button.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Annotate Scaffold", None))
-        self.pushButton_2.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"PushButton", None))
+        self.fixAllErrors_btn.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Fix All Errors", None))
         self.pushButton_3.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"PushButton", None))
-        self.pushButton.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"PushButton", None))
+        self.fixError_btn.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Fix Error", None))
         self.label.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
         self.label_2.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
         self.groupBox2.setTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Files detected as Scaffold:", None))
