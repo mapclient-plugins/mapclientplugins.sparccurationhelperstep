@@ -38,12 +38,17 @@ class Ui_SparcCurationHelperWidget(object):
         sizePolicy.setHeightForWidth(self.scaffold_annotation_label.sizePolicy().hasHeightForWidth())
         self.scaffold_annotation_label.setSizePolicy(sizePolicy)
 
-        self.gridLayout2.addWidget(self.scaffold_annotation_label, 0, 2, 1, 1)
+        self.gridLayout2.addWidget(self.scaffold_annotation_label, 0, 3, 1, 1)
 
         self.scaffold_annotations_listView = QListView(self.groupBox)
         self.scaffold_annotations_listView.setObjectName(u"scaffold_annotations_listView")
 
         self.gridLayout2.addWidget(self.scaffold_annotations_listView, 0, 0, 1, 1)
+
+        self.scaffold_views_listView = QListView(self.groupBox)
+        self.scaffold_views_listView.setObjectName(u"scaffold_views_listView")
+
+        self.gridLayout2.addWidget(self.scaffold_views_listView, 0, 1, 1, 1)
 
         self.thumbnail_preview_label = QLabel(self.groupBox)
         self.thumbnail_preview_label.setObjectName(u"thumbnail_preview_label")
@@ -53,7 +58,7 @@ class Ui_SparcCurationHelperWidget(object):
         sizePolicy1.setHeightForWidth(self.thumbnail_preview_label.sizePolicy().hasHeightForWidth())
         self.thumbnail_preview_label.setSizePolicy(sizePolicy1)
 
-        self.gridLayout2.addWidget(self.thumbnail_preview_label, 0, 1, 1, 1)
+        self.gridLayout2.addWidget(self.thumbnail_preview_label, 0, 2, 1, 1)
 
 
         self.gridLayout1.addWidget(self.groupBox, 0, 0, 1, 1)

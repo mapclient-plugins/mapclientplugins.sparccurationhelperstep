@@ -34,8 +34,9 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._ui.fixAllErrors_btn.clicked.connect(self._fixAllErrorsButtonClicked)
 
         self._ui.scaffold_annotations_listView.clicked[QtCore.QModelIndex].connect(self._scaffoldAnnotationsListItemClicked)
+        self._ui.scaffold_views_listView.clicked[QtCore.QModelIndex].connect(self._scaffoldViewsListItemClicked)
         self._ui.errors_listView.clicked[QtCore.QModelIndex].connect(self._errorsListItemClicked)
-        
+
         self._ui.annotate_scaffold_button.setVisible(False)
         self._ui.pushButton_3.setVisible(False)
 
@@ -65,7 +66,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
             elif isinstance(i, sa.ScaffoldMetadata):
                 item = QtGui.QStandardItem(i.get_file())
             else:
-                item = QtGui.QStandardItem(i["filename"])
+                item = QtGui.QStandardItem(i.get_filename())
             item.setData(i)
             item.setEditable(False)
             itemModel.appendRow(item)
@@ -87,13 +88,22 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
 
     def _scaffoldAnnotationsListItemClicked(self, modelIndex):
         """
-        Changes current step and possibly changes checked/run status.
+        Show view list of selected scaffold.
         """
         model = modelIndex.model()
         item = model.itemFromIndex(modelIndex)
         scaffoldAnnotation = item.data()
         # print(scaffoldAnnotation.thumbnail())
-        previewPixmap = QtGui.QPixmap(scaffoldAnnotation.get_thumbnail())
+        self._buildListView(self._ui.scaffold_views_listView, scaffoldAnnotation.get_views())
+
+    def _scaffoldViewsListItemClicked(self, modelIndex):
+        """
+        Show thumbnail of selected view
+        """
+        model = modelIndex.model()
+        item = model.itemFromIndex(modelIndex)
+        scaffoldView= item.data()
+        previewPixmap = QtGui.QPixmap(scaffoldView.get_thumbnail())
         previewPixmap = previewPixmap.scaled(500, 500, QtCore.Qt.KeepAspectRatio) 
         self._ui.thumbnail_preview_label.setScaledContents(True) 
         self._ui.thumbnail_preview_label.setPixmap(previewPixmap)
