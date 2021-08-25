@@ -1,7 +1,7 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from mapclientplugins.sparccurationhelperstep.ui_sparccurationhelperwidget import Ui_SparcCurationHelperWidget
-# from sparc.curation.tools.scaffold_annotations import ScaffoldAnnotation
+from sparc.curation.tools.scaffold_annotations import ManifestDataFrame
 import sparc.curation.tools.scaffold_annotations as sa
 
 class SparcCurationHelperWidget(QtWidgets.QWidget):
@@ -12,12 +12,17 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._ui.setupUi(self)
 
         self._callback = None
-        # sa = ScaffoldAnnotation(location)
+        # sa = ScaffoldMetadata(location)
         # scrape_manifest_entries(location)
         # self._fileDir = r"c:\users\ywan787\neondata\curationdata\Pennsieve-dataset-76-version-3"
         self._fileDir = location
 
+        self._manifestDF = ManifestDataFrame().setup_dataframe(self._fileDir, 10000000)
+
         self._currentError = None
+        self._errors = None
+        self._scaffold_annotations = None
+        self._scaffold_metadata = None
 
         self._makeConnections()
         self._updateUI()
@@ -27,20 +32,26 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
         self._ui.fixError_btn.clicked.connect(self._fixErrorButtonClicked)
         self._ui.fixAllErrors_btn.clicked.connect(self._fixAllErrorsButtonClicked)
-        self._ui.errors_listView.clicked[QtCore.QModelIndex].connect(self._errorsListItemClicked)
 
+        self._ui.scaffold_annotations_listView.clicked[QtCore.QModelIndex].connect(self._scaffoldAnnotationsListItemClicked)
+        self._ui.errors_listView.clicked[QtCore.QModelIndex].connect(self._errorsListItemClicked)
+        
+        self._ui.annotate_scaffold_button.setVisible(False)
+        self._ui.pushButton_3.setVisible(False)
 
     def _updateUI(self):
-        self.scaffold_annotations = sa.scrape_manifest_entries(self._fileDir)
-        self.scaffold_metadata = sa.search_for_metadata_files(self._fileDir, 10000000)
-        self.errors = sa.check_scaffold_annotations(self.scaffold_annotations)
-        self.errors.extend(sa.check_scaffold_metadata_annotated(self.scaffold_metadata, self.scaffold_annotations))
+        # self.errors = sa.check_scaffold_annotations()
+        self._errors = sa.get_errors()
+        # Force refresh
+        self._manifestDF = ManifestDataFrame().setup_dataframe(self._fileDir, 10000000)
 
-        self._buildListView(self._ui.scaffold_annotations_listView, self.scaffold_annotations)
-        self._buildListView(self._ui.scaffold_metadata_listView, self.scaffold_metadata)
-        self._buildListView(self._ui.errors_listView, self.errors)
-        self._ui.scaffold_annotation_label.setText("There are %d files are annotated as scaffold in manifest files."%len(self.scaffold_annotations))
-        self._ui.scaffold_metadata_label.setText("There are %d files are detected as scaffold file by programming."%len(self.scaffold_metadata))
+        self._scaffold_annotations = self._manifestDF.get_annotated_scaffold()
+        self._scaffold_metadata = self._manifestDF.get_real_scaffold()
+        self._buildListView(self._ui.scaffold_annotations_listView, self._scaffold_annotations)
+        self._buildListView(self._ui.scaffold_metadata_listView, self._scaffold_metadata)
+        self._buildListView(self._ui.errors_listView, self._errors)
+        self._ui.scaffold_annotation_label.setText("There are %d files are annotated as scaffold in manifest files."%len(self._scaffold_annotations))
+        self._ui.scaffold_metadata_label.setText("There are %d files are detected as scaffold file by programming."%len(self._scaffold_metadata))
 
     def _buildListView(self, listview, itemList):
         """
@@ -49,11 +60,12 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         selectedIndex = None
         itemModel = QtGui.QStandardItemModel(listview)
         for i in itemList:
-            if isinstance(i, sa.ScaffoldAnnotation):
-                item = QtGui.QStandardItem(i.file())
-            else:
+            if isinstance(i, sa.ScaffoldAnnotationError):
                 item = QtGui.QStandardItem(i.get_error_message()[7:])
-            print(i)
+            elif isinstance(i, sa.ScaffoldMetadata):
+                item = QtGui.QStandardItem(i.get_file())
+            else:
+                item = QtGui.QStandardItem(i["filename"])
             item.setData(i)
             item.setEditable(False)
             itemModel.appendRow(item)
@@ -69,12 +81,22 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         model = modelIndex.model()
         item = model.itemFromIndex(modelIndex)
         error = item.data()
-        print(error)
         if error != self._currentError:
             self._currentError = error
-            print("Set self._currentError", self._currentError)
-        print(self._currentError)
-        #    self._updateFitterStepWidgets()
+            # self._updateWidgets()
+
+    def _scaffoldAnnotationsListItemClicked(self, modelIndex):
+        """
+        Changes current step and possibly changes checked/run status.
+        """
+        model = modelIndex.model()
+        item = model.itemFromIndex(modelIndex)
+        scaffoldAnnotation = item.data()
+        # print(scaffoldAnnotation.thumbnail())
+        previewPixmap = QtGui.QPixmap(scaffoldAnnotation.get_thumbnail())
+        previewPixmap = previewPixmap.scaled(500, 500, QtCore.Qt.KeepAspectRatio) 
+        self._ui.thumbnail_preview_label.setScaledContents(True) 
+        self._ui.thumbnail_preview_label.setPixmap(previewPixmap)
 
 
     def _fixErrorButtonClicked(self):
@@ -82,14 +104,19 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
             print("YES!!!")
-            sa.fix_error(self._currentError, self._fileDir)
+            sa.fix_error(self._currentError)
             self._updateUI()
         # sa.annotate_scaffold_file()
 
-
     def _fixAllErrorsButtonClicked(self):
-        pass
-
+        confirmationMessage = sa.get_confirmation_message(self._currentError)
+        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        if result == QtWidgets.QMessageBox.Yes:
+            print("YES!!!")
+            for i in self._errors:
+                sa.fix_error(i)
+            self._updateUI()
+        # sa.annotate_scaffold_file()
 
 
     def registerDoneExecution(self, callback):

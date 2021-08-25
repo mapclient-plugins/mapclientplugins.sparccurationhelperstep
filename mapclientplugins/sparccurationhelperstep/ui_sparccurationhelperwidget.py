@@ -30,11 +30,6 @@ class Ui_SparcCurationHelperWidget(object):
         self.groupBox.setObjectName(u"groupBox")
         self.gridLayout2 = QGridLayout(self.groupBox)
         self.gridLayout2.setObjectName(u"gridLayout2")
-        self.scaffold_annotations_listView = QListView(self.groupBox)
-        self.scaffold_annotations_listView.setObjectName(u"scaffold_annotations_listView")
-
-        self.gridLayout2.addWidget(self.scaffold_annotations_listView, 0, 0, 1, 1)
-
         self.scaffold_annotation_label = QLabel(self.groupBox)
         self.scaffold_annotation_label.setObjectName(u"scaffold_annotation_label")
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -43,7 +38,22 @@ class Ui_SparcCurationHelperWidget(object):
         sizePolicy.setHeightForWidth(self.scaffold_annotation_label.sizePolicy().hasHeightForWidth())
         self.scaffold_annotation_label.setSizePolicy(sizePolicy)
 
-        self.gridLayout2.addWidget(self.scaffold_annotation_label, 0, 1, 1, 1)
+        self.gridLayout2.addWidget(self.scaffold_annotation_label, 0, 2, 1, 1)
+
+        self.scaffold_annotations_listView = QListView(self.groupBox)
+        self.scaffold_annotations_listView.setObjectName(u"scaffold_annotations_listView")
+
+        self.gridLayout2.addWidget(self.scaffold_annotations_listView, 0, 0, 1, 1)
+
+        self.thumbnail_preview_label = QLabel(self.groupBox)
+        self.thumbnail_preview_label.setObjectName(u"thumbnail_preview_label")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.thumbnail_preview_label.sizePolicy().hasHeightForWidth())
+        self.thumbnail_preview_label.setSizePolicy(sizePolicy1)
+
+        self.gridLayout2.addWidget(self.thumbnail_preview_label, 0, 1, 1, 1)
 
 
         self.gridLayout1.addWidget(self.groupBox, 0, 0, 1, 1)
@@ -57,11 +67,11 @@ class Ui_SparcCurationHelperWidget(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.annotate_scaffold_button = QPushButton(self.groupBox1)
         self.annotate_scaffold_button.setObjectName(u"annotate_scaffold_button")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.annotate_scaffold_button.sizePolicy().hasHeightForWidth())
-        self.annotate_scaffold_button.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.annotate_scaffold_button.sizePolicy().hasHeightForWidth())
+        self.annotate_scaffold_button.setSizePolicy(sizePolicy2)
 
         self.gridLayout_2.addWidget(self.annotate_scaffold_button, 1, 1, 1, 1)
 
@@ -77,18 +87,18 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.fixError_btn = QPushButton(self.groupBox1)
         self.fixError_btn.setObjectName(u"fixError_btn")
-        sizePolicy1.setHeightForWidth(self.fixError_btn.sizePolicy().hasHeightForWidth())
-        self.fixError_btn.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.fixError_btn.sizePolicy().hasHeightForWidth())
+        self.fixError_btn.setSizePolicy(sizePolicy2)
 
         self.gridLayout_2.addWidget(self.fixError_btn, 1, 0, 1, 1)
 
         self.label = QLabel(self.groupBox1)
         self.label.setObjectName(u"label")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy3)
 
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
@@ -152,13 +162,14 @@ class Ui_SparcCurationHelperWidget(object):
         SparcCurationHelperWidget.setWindowTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Sparc Curation Helper", None))
         self.groupBox.setTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Annotated Scaffold Files:", None))
         self.scaffold_annotation_label.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
+        self.thumbnail_preview_label.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Thumbnail", None))
         self.groupBox1.setTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Errors:", None))
         self.annotate_scaffold_button.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Annotate Scaffold", None))
         self.fixAllErrors_btn.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Fix All Errors", None))
-        self.pushButton_3.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"PushButton", None))
+        self.pushButton_3.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Don't Push", None))
         self.fixError_btn.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Fix Error", None))
-        self.label.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
-        self.label_2.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
+        self.label.setText("")
+        self.label_2.setText("")
         self.groupBox2.setTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Files detected as Scaffold:", None))
         self.scaffold_metadata_label.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"TextLabel", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.scaffold_annotation_tab), QCoreApplication.translate("SparcCurationHelperWidget", u"Scaffold Annotation", None))
