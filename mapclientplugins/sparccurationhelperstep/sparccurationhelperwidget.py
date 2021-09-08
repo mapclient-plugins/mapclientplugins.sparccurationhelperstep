@@ -1,5 +1,6 @@
 from PySide2 import QtCore, QtGui, QtWidgets
 
+import os
 from mapclientplugins.sparccurationhelperstep.ui_sparccurationhelperwidget import Ui_SparcCurationHelperWidget
 from sparc.curation.tools.scaffold_annotations import ManifestDataFrame
 import sparc.curation.tools.scaffold_annotations as sa
@@ -42,9 +43,11 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
 
     def _updateUI(self):
         # self.errors = sa.check_scaffold_annotations()
-        self._errors = sa.get_errors()
+    
         # Force refresh
         self._manifestDF = ManifestDataFrame().setup_dataframe(self._fileDir, 10000000)
+
+        self._errors = sa.get_errors()
 
         self._scaffold_annotations = self._manifestDF.get_annotated_scaffold()
         self._scaffold_metadata = self._manifestDF.get_real_scaffold()
@@ -63,10 +66,10 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         for i in itemList:
             if isinstance(i, sa.ScaffoldAnnotationError):
                 item = QtGui.QStandardItem(i.get_error_message()[7:])
-            elif isinstance(i, sa.ScaffoldMetadata):
-                item = QtGui.QStandardItem(i.get_file())
-            else:
+            elif isinstance(i, sa.ScaffoldAnnotation):
                 item = QtGui.QStandardItem(i.get_filename())
+            else:
+                item = QtGui.QStandardItem(str(i))
             item.setData(i)
             item.setEditable(False)
             itemModel.appendRow(item)
@@ -94,7 +97,12 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         item = model.itemFromIndex(modelIndex)
         scaffoldAnnotation = item.data()
         # print(scaffoldAnnotation.thumbnail())
-        self._buildListView(self._ui.scaffold_views_listView, scaffoldAnnotation.get_views())
+        viewList = []
+        for i in self._manifestDF.get_annotated_view():
+            for j in scaffoldAnnotation.get_children():
+                if os.path.samefile(i.get_location(), j):
+                    viewList.append(i)
+        self._buildListView(self._ui.scaffold_views_listView, viewList)
 
     def _scaffoldViewsListItemClicked(self, modelIndex):
         """
