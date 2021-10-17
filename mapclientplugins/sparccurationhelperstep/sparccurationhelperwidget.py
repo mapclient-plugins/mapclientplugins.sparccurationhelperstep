@@ -5,8 +5,9 @@ from mapclientplugins.sparccurationhelperstep.ui_sparccurationhelperwidget impor
 from sparc.curation.tools.scaffold_annotations import ManifestDataFrame
 import sparc.curation.tools.scaffold_annotations as sa
 
+
 class SparcCurationHelperWidget(QtWidgets.QWidget):
-    
+
     def __init__(self, model, location, parent=None):
         super(SparcCurationHelperWidget, self).__init__(parent)
         self._ui = Ui_SparcCurationHelperWidget()
@@ -28,7 +29,6 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._makeConnections()
         self._updateUI()
 
-
     def _makeConnections(self):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
         self._ui.fixError_btn.clicked.connect(self._fixErrorButtonClicked)
@@ -43,7 +43,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
 
     def _updateUI(self):
         # self.errors = sa.check_scaffold_annotations()
-    
+
         # Force refresh
         self._manifestDF = ManifestDataFrame().setup_dataframe(self._fileDir, 10000000)
 
@@ -54,8 +54,8 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._buildListView(self._ui.scaffold_annotations_listView, self._scaffold_annotations)
         self._buildListView(self._ui.scaffold_metadata_listView, self._scaffold_metadata)
         self._buildListView(self._ui.errors_listView, self._errors)
-        self._ui.scaffold_annotation_label.setText("There are %d files are annotated as scaffold in manifest files."%len(self._scaffold_annotations))
-        self._ui.scaffold_metadata_label.setText("There are %d files are detected as scaffold file by programming."%len(self._scaffold_metadata))
+        self._ui.scaffold_annotation_label.setText("There are %d files are annotated as scaffold in manifest files." % len(self._scaffold_annotations))
+        self._ui.scaffold_metadata_label.setText("There are %d files are detected as scaffold file by programming." % len(self._scaffold_metadata))
 
     def _buildListView(self, listview, itemList):
         """
@@ -110,12 +110,11 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         """
         model = modelIndex.model()
         item = model.itemFromIndex(modelIndex)
-        scaffoldView= item.data()
+        scaffoldView = item.data()
         previewPixmap = QtGui.QPixmap(scaffoldView.get_thumbnail())
-        previewPixmap = previewPixmap.scaled(500, 500, QtCore.Qt.KeepAspectRatio) 
-        self._ui.thumbnail_preview_label.setScaledContents(True) 
+        previewPixmap = previewPixmap.scaled(500, 500, QtCore.Qt.KeepAspectRatio)
+        self._ui.thumbnail_preview_label.setScaledContents(True)
         self._ui.thumbnail_preview_label.setPixmap(previewPixmap)
-
 
     def _fixErrorButtonClicked(self):
         confirmationMessage = sa.get_confirmation_message(self._currentError)
@@ -135,7 +134,6 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
                 sa.fix_error(i)
             self._updateUI()
         # sa.annotate_scaffold_file()
-
 
     def registerDoneExecution(self, callback):
         self._callback = callback

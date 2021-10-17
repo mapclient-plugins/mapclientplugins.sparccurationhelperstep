@@ -1,4 +1,3 @@
-
 """
 MAP Client Plugin Step
 """
@@ -19,10 +18,10 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
 
     def __init__(self, location):
         super(SparcCurationHelperStep, self).__init__('Sparc Curation Helper', location)
-        self._configured = False # A step cannot be executed until it has been configured.
+        self._configured = False  # A step cannot be executed until it has been configured.
         self._category = 'Utility'
         # Add any other initialisation code here:
-        self._icon =  QtGui.QImage(':/sparccurationhelperstep/images/utility.png')
+        self._icon = QtGui.QImage(':/sparccurationhelperstep/images/utility.png')
         # Ports:
         self.addPort(('http://physiomeproject.org/workflow/1.0/rdf-schema#port',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#uses',
@@ -34,9 +33,9 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#provides',
                       'http://physiomeproject.org/workflow/1.0/rdf-schema#file_location'))
         # Port data:
-        self._port0_inputFileDir = None # <not-set>
-        self._portData1 = None # <not-set>
-        self._portData2 = None # <not-set>
+        self._port0_inputFileDir = None  # <not-set>
+        self._portData1 = None  # <not-set>
+        self._portData2 = None  # <not-set>
         # Config:
         self._config = {}
         self._config['identifier'] = ''
@@ -65,9 +64,9 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         :param dataIn: The data to set for the port at the given index.
         """
         if index == 0:
-            self._port0_inputFileDir = dataIn # <not-set>
+            self._port0_inputFileDir = dataIn  # <not-set>
         elif index == 1:
-            self._portData1 = dataIn # <not-set>
+            self._portData1 = dataIn  # <not-set>
 
     def getPortData(self, index):
         """
@@ -77,7 +76,7 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
 
         :param index: Index of the port to return.
         """
-        return self._portData2 # <not-set>
+        return self._portData2  # <not-set>
 
     def configure(self):
         """
@@ -131,5 +130,3 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         d.identifierOccursCount = self._identifierOccursCount
         d.setConfig(self._config)
         self._configured = d.validate()
-
-
