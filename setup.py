@@ -20,7 +20,7 @@ def readfile(filename, split=False):
 readme = readfile("README.rst", split=True)[3:]  # skip title
 # For requirements not hosted on PyPi place listings
 # into the 'requirements.txt' file.
-requires = []  # minimal requirements listing
+requires = ['PySide2', 'sparc-curation-tools>=0.2.0']  # minimal requirements listing
 source_license = readfile("LICENSE")
 
 

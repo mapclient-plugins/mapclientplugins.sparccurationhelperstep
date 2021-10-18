@@ -50,7 +50,7 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         """
         # Put your execute step code here before calling the '_doneExecution' method.
         # self._model = SparcCurationHelperWidget(self._portData0, self._location, self._config['identifier'])
-        self._view = SparcCurationHelperWidget(None, self._port0_inputFileDir)
+        self._view = SparcCurationHelperWidget(self._port0_inputFileDir)
         self._view.registerDoneExecution(self._doneExecution)
         self._setCurrentWidget(self._view)
 

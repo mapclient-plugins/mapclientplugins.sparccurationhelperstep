@@ -1,0 +1,2 @@
+PySide2
+sparc-curation-tools>=0.2.0
