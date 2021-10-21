@@ -1,13 +1,14 @@
-import os
 
 from PySide2 import QtCore, QtGui, QtWidgets
+
 from sparc.curation.tools.annotations.scaffold import ScaffoldAnnotationError, ScaffoldAnnotation
+from sparc.curation.tools.errors import AnnotationDirectoryNoWriteAccess
 from sparc.curation.tools.ondisk import OnDiskFiles
+from sparc.curation.tools.scaffold_annotations import ManifestDataFrame
 from sparc.curation.tools.utilities import convert_to_bytes
 
 from mapclientplugins.sparccurationhelperstep.scaffoldannotationsmodel import ScaffoldAnnotationsModel
 from mapclientplugins.sparccurationhelperstep.ui_sparccurationhelperwidget import Ui_SparcCurationHelperWidget
-from sparc.curation.tools.scaffold_annotations import ManifestDataFrame
 
 import sparc.curation.tools.scaffold_annotations as sa
 
@@ -93,7 +94,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         listview.show()
 
     def _scaffold_annotation_clicked(self, model_index):
-        if self._scaffold_annotation_selected is not None:
+        if self._scaffold_annotation_selected is not None and model_index.row() == self._scaffold_annotation_selected:
             selection_model = self._ui.tableViewScaffoldAnnotations.selectionModel()
             selection_model.clearSelection()
             self._scaffold_annotation_selected = None
@@ -117,20 +118,31 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
             self._currentError = error
             # self._updateWidgets()
 
+    def _fixError(self, error):
+        success = False
+        try:
+            sa.fix_error(error)
+            success = True
+        except AnnotationDirectoryNoWriteAccess:
+            QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
+
+        return success
+
     def _fixErrorButtonClicked(self):
         confirmationMessage = sa.get_confirmation_message(self._currentError)
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
-            sa.fix_error(self._currentError)
+            self._fixError(self._currentError)
             self._updateUI()
-        # sa.annotate_scaffold_file()
 
     def _fixAllErrorsButtonClicked(self):
         confirmationMessage = sa.get_confirmation_message(self._currentError)
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
-            for i in self._errors:
-                sa.fix_error(i)
+            for e in self._errors:
+                if not self._fixError(e):
+                    break
+
             self._updateUI()
         # sa.annotate_scaffold_file()
 
