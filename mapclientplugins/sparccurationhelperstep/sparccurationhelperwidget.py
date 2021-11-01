@@ -22,9 +22,6 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._ui.plot_annotation_tab.setVisible(False)
 
         self._callback = None
-        # sa = ScaffoldMetadata(location)
-        # scrape_manifest_entries(location)
-        # self._fileDir = r"c:\users\ywan787\neondata\curationdata\Pennsieve-dataset-76-version-3"
         self._fileDir = location
 
         max_size = convert_to_bytes('3MiB')
@@ -50,11 +47,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._ui.buttonFixError.clicked.connect(self._fixErrorButtonClicked)
         self._ui.buttonFixAllErrors.clicked.connect(self._fixAllErrorsButtonClicked)
 
-        # self._ui.tableViewScaffoldAnnotations.selectionModel().selectionChanged.connect(self._scaffold_annotation_clicked)
         self._ui.tableViewScaffoldAnnotations.clicked.connect(self._scaffold_annotation_clicked)
-        # self._ui.tableViewScaffoldAnnotations.clicked.connect()
-        # self._ui.scaffold_annotations_listView.clicked[QtCore.QModelIndex].connect(self._scaffoldAnnotationsListItemClicked)
-        # self._ui.scaffold_views_listView.clicked[QtCore.QModelIndex].connect(self._scaffoldViewsListItemClicked)
         self._ui.listViewErrors.clicked[QtCore.QModelIndex].connect(self._errorsListItemClicked)
 
         self._ui.annotate_scaffold_button.setVisible(False)
@@ -117,7 +110,6 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         error = item.data()
         if error != self._currentError:
             self._currentError = error
-            # self._updateWidgets()
 
     def _fixError(self, error):
         success = False
@@ -145,11 +137,9 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
                     break
 
             self._updateUI()
-        # sa.annotate_scaffold_file()
 
     def registerDoneExecution(self, callback):
         self._callback = callback
 
     def _doneButtonClicked(self):
-        # self._model.done()
         self._callback()
