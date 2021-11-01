@@ -19,6 +19,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         super(SparcCurationHelperWidget, self).__init__(parent)
         self._ui = Ui_SparcCurationHelperWidget()
         self._ui.setupUi(self)
+        self._ui.plot_annotation_tab.setVisible(False)
 
         self._callback = None
         # sa = ScaffoldMetadata(location)
