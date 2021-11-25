@@ -16,8 +16,10 @@ class ScaffoldAnnotationsModel(QtCore.QAbstractTableModel):
         filenames = data.get_metadata_filenames()
         for filename in filenames:
             view_filename = data.get_derived_filenames(filename)
-            thumbnail_filename = data.get_derived_filenames(view_filename)
-            self._data.append([filename, view_filename, thumbnail_filename])
+            if view_filename:
+                for view in view_filename:
+                    thumbnail_filename = data.get_derived_filenames(view)
+                    self._data.append([filename, view, ",".join(thumbnail_filename)])
 
         self._row_count = len(self._data)
         self.endResetModel()
