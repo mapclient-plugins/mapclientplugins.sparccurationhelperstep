@@ -12,12 +12,14 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from mapclientplugins.sparccurationhelperstep.helpers.contextannotationwidget import ContextAnnotationWidget
+
 
 class Ui_SparcCurationHelperWidget(object):
     def setupUi(self, SparcCurationHelperWidget):
         if not SparcCurationHelperWidget.objectName():
             SparcCurationHelperWidget.setObjectName(u"SparcCurationHelperWidget")
-        SparcCurationHelperWidget.resize(742, 551)
+        SparcCurationHelperWidget.resize(824, 693)
         self.verticalLayout = QVBoxLayout(SparcCurationHelperWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.tabWidget = QTabWidget(SparcCurationHelperWidget)
@@ -30,35 +32,30 @@ class Ui_SparcCurationHelperWidget(object):
         self.groupBoxScaffoldAnntotations.setObjectName(u"groupBoxScaffoldAnntotations")
         self.horizontalLayout_2 = QHBoxLayout(self.groupBoxScaffoldAnntotations)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.tableViewScaffoldAnnotations = QTableView(self.groupBoxScaffoldAnntotations)
-        self.tableViewScaffoldAnnotations.setObjectName(u"tableViewScaffoldAnnotations")
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.tableViewScaffoldAnnotations.sizePolicy().hasHeightForWidth())
-        self.tableViewScaffoldAnnotations.setSizePolicy(sizePolicy)
-        self.tableViewScaffoldAnnotations.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.tableViewScaffoldAnnotations.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.tableViewScaffoldAnnotations.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.treeViewScaffoldAnnotations = QTreeView(self.groupBoxScaffoldAnntotations)
+        self.treeViewScaffoldAnnotations.setObjectName(u"treeViewScaffoldAnnotations")
 
-        self.horizontalLayout_2.addWidget(self.tableViewScaffoldAnnotations)
+        self.horizontalLayout_2.addWidget(self.treeViewScaffoldAnnotations)
 
         self.verticalLayout_2 = QVBoxLayout()
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.thumbnail_preview_label = QLabel(self.groupBoxScaffoldAnntotations)
         self.thumbnail_preview_label.setObjectName(u"thumbnail_preview_label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.thumbnail_preview_label.sizePolicy().hasHeightForWidth())
-        self.thumbnail_preview_label.setSizePolicy(sizePolicy1)
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.thumbnail_preview_label.sizePolicy().hasHeightForWidth())
+        self.thumbnail_preview_label.setSizePolicy(sizePolicy)
 
         self.verticalLayout_2.addWidget(self.thumbnail_preview_label)
 
         self.labelThumbnailPreview = QLabel(self.groupBoxScaffoldAnntotations)
         self.labelThumbnailPreview.setObjectName(u"labelThumbnailPreview")
-        sizePolicy.setHeightForWidth(self.labelThumbnailPreview.sizePolicy().hasHeightForWidth())
-        self.labelThumbnailPreview.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.labelThumbnailPreview.sizePolicy().hasHeightForWidth())
+        self.labelThumbnailPreview.setSizePolicy(sizePolicy1)
 
         self.verticalLayout_2.addWidget(self.labelThumbnailPreview)
 
@@ -126,12 +123,64 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.gridLayout3.addWidget(self.groupBoxErrors, 2, 0, 1, 1)
 
+        self.groupBox = QGroupBox(self.scaffold_annotation_tab)
+        self.groupBox.setObjectName(u"groupBox")
+        self.horizontalLayout_3 = QHBoxLayout(self.groupBox)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.comboBoxScaffoldMeta = QComboBox(self.groupBox)
+        self.comboBoxScaffoldMeta.setObjectName(u"comboBoxScaffoldMeta")
+
+        self.horizontalLayout_3.addWidget(self.comboBoxScaffoldMeta)
+
+        self.comboBoxScaffoldView = QComboBox(self.groupBox)
+        self.comboBoxScaffoldView.setObjectName(u"comboBoxScaffoldView")
+
+        self.horizontalLayout_3.addWidget(self.comboBoxScaffoldView)
+
+        self.comboBoxScaffoldThumbnail = QComboBox(self.groupBox)
+        self.comboBoxScaffoldThumbnail.setObjectName(u"comboBoxScaffoldThumbnail")
+
+        self.horizontalLayout_3.addWidget(self.comboBoxScaffoldThumbnail)
+
+        self.pushButtonApply = QPushButton(self.groupBox)
+        self.pushButtonApply.setObjectName(u"pushButtonApply")
+
+        self.horizontalLayout_3.addWidget(self.pushButtonApply)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
+
+
+        self.gridLayout3.addWidget(self.groupBox, 1, 0, 1, 1)
+
         self.tabWidget.addTab(self.scaffold_annotation_tab, "")
         self.plot_annotation_tab = QWidget()
         self.plot_annotation_tab.setObjectName(u"plot_annotation_tab")
         self.tabWidget.addTab(self.plot_annotation_tab, "")
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.verticalLayout_3 = QVBoxLayout(self.tab)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.widget = ContextAnnotationWidget(self.tab)
+        self.widget.setObjectName(u"widget")
+
+        self.verticalLayout_3.addWidget(self.widget)
+
+        self.tabWidget.addTab(self.tab, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
+
+        self.tableViewScaffoldAnnotations = QTableView(SparcCurationHelperWidget)
+        self.tableViewScaffoldAnnotations.setObjectName(u"tableViewScaffoldAnnotations")
+        sizePolicy1.setHeightForWidth(self.tableViewScaffoldAnnotations.sizePolicy().hasHeightForWidth())
+        self.tableViewScaffoldAnnotations.setSizePolicy(sizePolicy1)
+        self.tableViewScaffoldAnnotations.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.tableViewScaffoldAnnotations.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tableViewScaffoldAnnotations.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        self.verticalLayout.addWidget(self.tableViewScaffoldAnnotations)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -150,7 +199,7 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.retranslateUi(SparcCurationHelperWidget)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(SparcCurationHelperWidget)
@@ -166,8 +215,11 @@ class Ui_SparcCurationHelperWidget(object):
         self.buttonFixError.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Fix Error", None))
         self.buttonFixAllErrors.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Fix All Errors", None))
         self.pushButton_3.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Don't Push", None))
+        self.groupBox.setTitle(QCoreApplication.translate("SparcCurationHelperWidget", u"Manual assignment:", None))
+        self.pushButtonApply.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Apply", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.scaffold_annotation_tab), QCoreApplication.translate("SparcCurationHelperWidget", u"Scaffold Annotation", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.plot_annotation_tab), QCoreApplication.translate("SparcCurationHelperWidget", u"Plot Annotation", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("SparcCurationHelperWidget", u"Context Annotation", None))
         self.pushButtonDone.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Done", None))
     # retranslateUi
 
