@@ -60,15 +60,22 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         print(json.dumps(data, default=lambda o: o.__dict__, sort_keys=True, indent=2))
 
-        annotation_data = {}
+        annotation_data = {
+            "version": "0.2.0"
+        }
+
+        def _add_entry(_annotation_data, annotation, value):
+            if annotation:
+                if annotation in _annotation_data:
+                    _annotation_data[annotation].append(value)
+                else:
+                    _annotation_data[annotation] = [value]
 
         for v in views:
-            if v["annotation"]:
-                annotation_data[v["annotation"]] = v["id"]
+            _add_entry(annotation_data, v["annotation"], v["id"])
 
         for s in samples:
-            if s["annotation"]:
-                annotation_data[s["annotation"]] = s["id"]
+            _add_entry(annotation_data, s["annotation"], s["id"])
 
         print(json.dumps(annotation_data, default=lambda o: o.__dict__, sort_keys=True, indent=2))
 
