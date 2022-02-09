@@ -20,7 +20,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         super(SparcCurationHelperWidget, self).__init__(parent)
         self._ui = Ui_SparcCurationHelperWidget()
         self._ui.setupUi(self)
-        self._ui.plot_annotation_tab.setVisible(False)
+        self._ui.tabPlotAnnotation.setVisible(False)
 
         self._callback = None
         self._fileDir = location
@@ -37,41 +37,41 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
 
         self._scaffold_annotations_model_tree = ScaffoldAnnotationsModelTree(location)
         self._scaffold_annotations_model = ScaffoldAnnotationsModel(location)
-        self._ui.tableViewScaffoldAnnotations.setModel(self._scaffold_annotations_model)
-        self._ui.treeViewScaffoldAnnotations.setModel(self._scaffold_annotations_model_tree)
-        self._ui.tableViewScaffoldAnnotations.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self._ui.tableViewScaffoldAnnotations.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        # self._ui.tableViewScaffoldAnnotations.setModel(self._scaffold_annotations_model)
+        # self._ui.treeViewScaffoldAnnotations.setModel(self._scaffold_annotations_model_tree)
+        # self._ui.tableViewScaffoldAnnotations.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        # self._ui.tableViewScaffoldAnnotations.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         self._make_connections()
         self._update_ui()
 
     def _make_connections(self):
         self._ui.pushButtonDone.clicked.connect(self._doneButtonClicked)
-        self._ui.buttonFixError.clicked.connect(self._fixErrorButtonClicked)
-        self._ui.buttonFixAllErrors.clicked.connect(self._fixAllErrorsButtonClicked)
+        # self._ui.buttonFixError.clicked.connect(self._fixErrorButtonClicked)
+        # self._ui.buttonFixAllErrors.clicked.connect(self._fixAllErrorsButtonClicked)
 
-        self._ui.tableViewScaffoldAnnotations.clicked.connect(self._scaffold_annotation_clicked)
-        self._ui.listViewErrors.clicked[QtCore.QModelIndex].connect(self._errorsListItemClicked)
+        # self._ui.tableViewScaffoldAnnotations.clicked.connect(self._scaffold_annotation_clicked)
+        # self._ui.listViewErrors.clicked[QtCore.QModelIndex].connect(self._errorsListItemClicked)
 
-        self._ui.annotate_scaffold_button.setVisible(False)
-        self._ui.pushButton_3.setVisible(False)
+        # self._ui.annotate_scaffold_button.setVisible(False)
+        # self._ui.pushButton_3.setVisible(False)
 
-        self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
+        # self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
 
     def _update_ui(self):
         # Force refresh
         self._manifestDF = ManifestDataFrame().setup_dataframe(self._fileDir)
         self._scaffold_annotations_model.resetData(self._manifestDF.get_scaffold_data())
         self._scaffold_annotations_model_tree.reset_data(self._manifestDF.get_scaffold_data())
-        self._ui.tableViewScaffoldAnnotations.resizeColumnsToContents()
+        # self._ui.tableViewScaffoldAnnotations.resizeColumnsToContents()
 
         self._errors = sa.get_errors()
 
-        self._ui.buttonFixAllErrors.setEnabled(len(self._errors) > 0)
-        self._ui.buttonFixError.setEnabled(len(self._errors) > 0)
+        # self._ui.buttonFixAllErrors.setEnabled(len(self._errors) > 0)
+        # self._ui.buttonFixError.setEnabled(len(self._errors) > 0)
 
         errors_model = _build_list_model(self._errors)
-        self._ui.listViewErrors.setModel(errors_model)
+        # self._ui.listViewErrors.setModel(errors_model)
 
         annotations = ManifestDataFrame().get_scaffold_data().get_scaffold_annotations()
         meta_items = []
@@ -85,29 +85,29 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
             elif a.get_additional_type() == SCAFFOLD_THUMBNAIL_MIME:
                 thumb_items.append(a)
 
-        self._ui.pushButtonApply.setEnabled(len(meta_items) and len(view_items) and len(thumb_items))
+        # self._ui.pushButtonApply.setEnabled(len(meta_items) and len(view_items) and len(thumb_items))
 
         meta_model = _build_list_model(meta_items)
         view_model = _build_list_model(view_items)
         thumb_model = _build_list_model(thumb_items)
 
-        self._ui.comboBoxScaffoldMeta.setModel(meta_model)
-        self._ui.comboBoxScaffoldView.setModel(view_model)
-        self._ui.comboBoxScaffoldThumbnail.setModel(thumb_model)
+        # self._ui.comboBoxScaffoldMeta.setModel(meta_model)
+        # self._ui.comboBoxScaffoldView.setModel(view_model)
+        # self._ui.comboBoxScaffoldThumbnail.setModel(thumb_model)
 
     def _scaffold_annotation_clicked(self, model_index):
         if self._scaffold_annotation_selected is not None and model_index.row() == self._scaffold_annotation_selected:
-            selection_model = self._ui.tableViewScaffoldAnnotations.selectionModel()
-            selection_model.clearSelection()
+            # selection_model = self._ui.tableViewScaffoldAnnotations.selectionModel()
+            # selection_model.clearSelection()
             self._scaffold_annotation_selected = None
-            self._ui.labelThumbnailPreview.clear()
+            # self._ui.labelThumbnailPreview.clear()
         else:
             self._scaffold_annotation_selected = model_index.row()
             thumbnail_index = self._scaffold_annotations_model.index(model_index.row(), 2, QtCore.QModelIndex())
             thumbnail = self._scaffold_annotations_model.data(thumbnail_index, QtCore.Qt.UserRole)
             pixmap = QtGui.QPixmap(thumbnail)
             pixmap = pixmap.scaled(256, 256, QtCore.Qt.KeepAspectRatio)
-            self._ui.labelThumbnailPreview.setPixmap(pixmap)
+            # self._ui.labelThumbnailPreview.setPixmap(pixmap)
 
     def _errorsListItemClicked(self, modelIndex):
         """
