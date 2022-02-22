@@ -30,10 +30,20 @@ class Ui_ViewsWidget(object):
 
         self.gridLayout.addWidget(self.labelThumbnail, 1, 1, 1, 1)
 
+        self.pushButtonThumbnailFile = QPushButton(ViewsWidget)
+        self.pushButtonThumbnailFile.setObjectName(u"pushButtonThumbnailFile")
+
+        self.gridLayout.addWidget(self.pushButtonThumbnailFile, 1, 4, 1, 1)
+
         self.labelPath = QLabel(ViewsWidget)
         self.labelPath.setObjectName(u"labelPath")
 
         self.gridLayout.addWidget(self.labelPath, 0, 1, 1, 1)
+
+        self.pushButtonViewFile = QPushButton(ViewsWidget)
+        self.pushButtonViewFile.setObjectName(u"pushButtonViewFile")
+
+        self.gridLayout.addWidget(self.pushButtonViewFile, 0, 4, 1, 1)
 
         self.labelAnnotation = QLabel(ViewsWidget)
         self.labelAnnotation.setObjectName(u"labelAnnotation")
@@ -82,10 +92,12 @@ class Ui_ViewsWidget(object):
         self.labelThumbnail.setToolTip(QCoreApplication.translate("ViewsWidget", u"Relative path from dataset root directory", None))
 #endif // QT_CONFIG(tooltip)
         self.labelThumbnail.setText(QCoreApplication.translate("ViewsWidget", u"Thumbnail:", None))
+        self.pushButtonThumbnailFile.setText(QCoreApplication.translate("ViewsWidget", u"...", None))
 #if QT_CONFIG(tooltip)
         self.labelPath.setToolTip(QCoreApplication.translate("ViewsWidget", u"Relative path from dataset root directory", None))
 #endif // QT_CONFIG(tooltip)
         self.labelPath.setText(QCoreApplication.translate("ViewsWidget", u"Path:", None))
+        self.pushButtonViewFile.setText(QCoreApplication.translate("ViewsWidget", u"...", None))
         self.labelAnnotation.setText(QCoreApplication.translate("ViewsWidget", u"Annotation:", None))
 #if QT_CONFIG(tooltip)
         self.lineEditPath.setToolTip(QCoreApplication.translate("ViewsWidget", u"Relative path from dataset root directory", None))

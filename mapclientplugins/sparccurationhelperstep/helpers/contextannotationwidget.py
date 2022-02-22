@@ -8,6 +8,8 @@ from mapclientplugins.sparccurationhelperstep.helpers.ui_contextannotationwidget
 from mapclientplugins.sparccurationhelperstep.helpers.sampleswidget import SamplesWidget
 from mapclientplugins.sparccurationhelperstep.helpers.viewswidget import ViewsWidget
 
+import sparc.curation.tools.context_annotations as context_annotations
+from sparc.curation.tools.manifests import ManifestDataFrame
 
 class ContextAnnotationWidget(QtWidgets.QWidget):
 
@@ -57,8 +59,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         data["views"] = views
         data["samples"] = samples
-
+        
+        contextinfo_location = os.path.join(ManifestDataFrame().get_dataset_dir(), 'scaffoldcontextinfo.json')
+        print(contextinfo_location)
         print(json.dumps(data, default=lambda o: o.__dict__, sort_keys=True, indent=2))
+        context_annotations.write_context_info(contextinfo_location, data)
 
         annotation_data = {
             "version": "0.2.0"
@@ -73,11 +78,14 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         for v in views:
             _add_entry(annotation_data, v["annotation"], v["id"])
+            context_annotations.update_anatomical_entity(v["path"], v["annotation"])
 
         for s in samples:
             _add_entry(annotation_data, s["annotation"], s["id"])
 
-        print(json.dumps(annotation_data, default=lambda o: o.__dict__, sort_keys=True, indent=2))
+        print(json.dumps(annotation_data))
+        context_annotations.update_additional_type(contextinfo_location)
+        context_annotations.update_supplemental_json(contextinfo_location, json.dumps(annotation_data))
 
     def _open_annotation_map_file(self):
         result = QtWidgets.QFileDialog.getOpenFileName(self, "Open annotation map file", self._previous_location)
@@ -105,6 +113,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
                     if scaffold_annotations:
                         self._scaffold_annotations = scaffold_annotations
+                        self._update_view_annotations()
+
+    def _update_view_annotations(self):
+        for index in range(self._ui.tabWidgetViews.count()):
+            self._ui.tabWidgetViews.widget(index).add_annotations(self._scaffold_annotations)
 
     def _next_tab_header(self, source):
         if source == "Sample":

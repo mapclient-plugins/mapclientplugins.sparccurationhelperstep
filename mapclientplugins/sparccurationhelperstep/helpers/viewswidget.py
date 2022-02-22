@@ -1,3 +1,6 @@
+import csv
+import json
+import os.path
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from mapclientplugins.sparccurationhelperstep.helpers.ui_viewswidget import Ui_ViewsWidget
@@ -11,6 +14,9 @@ class ViewsWidget(QtWidgets.QWidget):
         super(ViewsWidget, self).__init__(parent)
         self._ui = Ui_ViewsWidget()
         self._ui.setupUi(self)
+        
+        self._previous_location = QtCore.QDir.homePath()
+
         m = self._ui.comboBoxSample.model()
         for sample in samples:
             m.appendRow(QtGui.QStandardItem(sample))
@@ -21,6 +27,8 @@ class ViewsWidget(QtWidgets.QWidget):
         self._make_connections()
 
     def _make_connections(self):
+        self._ui.pushButtonThumbnailFile.clicked.connect(self._open_thumbnail_file)
+        self._ui.pushButtonViewFile.clicked.connect(self._open_view_file)
         self._ui.comboBoxSample.currentTextChanged.connect(self.sample_changed)
 
     def set_sample(self, sample):
@@ -67,3 +75,18 @@ class ViewsWidget(QtWidgets.QWidget):
             if self._ui.comboBoxSample.currentIndex() == remove_row:
                 self._ui.comboBoxSample.setCurrentIndex(0)
             m.takeRow(remove_row)
+
+    def _open_view_file(self):
+        self._open_file(self._ui.lineEditPath)
+
+    def _open_thumbnail_file(self):
+        self._open_file(self._ui.lineEditThumbnail)
+
+    def _open_file(self, line_editor):
+        result = QtWidgets.QFileDialog.getOpenFileName(self, "Open annotation map file", self._previous_location)
+        file_name = result[0]
+        if file_name:
+            self._previous_location = os.path.dirname(file_name)
+            with open(file_name) as f:
+                # check if it's view/thumbnail file
+                line_editor.setText(file_name)

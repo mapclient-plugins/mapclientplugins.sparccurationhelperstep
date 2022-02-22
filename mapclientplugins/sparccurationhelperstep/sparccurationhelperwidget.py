@@ -1,8 +1,9 @@
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-from sparc.curation.tools.annotations.scaffold import ScaffoldAnnotationError, ScaffoldAnnotation
+from sparc.curation.tools.annotations.scaffold import ScaffoldAnnotation
 from sparc.curation.tools.definitions import SCAFFOLD_FILE_MIME, SCAFFOLD_THUMBNAIL_MIME, SCAFFOLD_VIEW_MIME
+from sparc.curation.tools.errors import ScaffoldAnnotationError
 from sparc.curation.tools.errors import AnnotationDirectoryNoWriteAccess
 from sparc.curation.tools.ondisk import OnDiskFiles
 from sparc.curation.tools.scaffold_annotations import ManifestDataFrame
