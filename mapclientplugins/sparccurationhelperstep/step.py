@@ -37,8 +37,7 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         self._portData1 = None  # <not-set>
         self._portData2 = None  # <not-set>
         # Config:
-        self._config = {}
-        self._config['identifier'] = ''
+        self._config = {'identifier': ''}
         self._model = None
         self._view = None
 

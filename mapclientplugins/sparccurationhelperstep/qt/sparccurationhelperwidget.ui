@@ -17,13 +17,12 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="ScaffoldAnnotationWidget" name="tabScaffoldAnnotation">
       <attribute name="title">
        <string>Scaffold Annotation</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout3"/>
      </widget>
      <widget class="QWidget" name="tabPlotAnnotation">
       <attribute name="title">
@@ -34,20 +33,6 @@
       <attribute name="title">
        <string>Context Annotation</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
      </widget>
     </widget>
    </item>

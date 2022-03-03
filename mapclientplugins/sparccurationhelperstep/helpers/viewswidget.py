@@ -1,30 +1,37 @@
-import csv
-import json
 import os.path
 
 from PySide2 import QtCore, QtGui, QtWidgets
+
+from mapclientplugins.sparccurationhelperstep.helpers.common import relative_to_dataset_dir
 from mapclientplugins.sparccurationhelperstep.helpers.ui_viewswidget import Ui_ViewsWidget
 
 
 class ViewsWidget(QtWidgets.QWidget):
 
     sample_changed = QtCore.Signal(str)
+    previous_location_changed = QtCore.Signal(str)
 
-    def __init__(self, samples, annotations=None, parent=None):
+    def __init__(self, annotations=None, parent=None):
         super(ViewsWidget, self).__init__(parent)
         self._ui = Ui_ViewsWidget()
         self._ui.setupUi(self)
-        
-        self._previous_location = QtCore.QDir.homePath()
 
-        m = self._ui.comboBoxSample.model()
-        for sample in samples:
-            m.appendRow(QtGui.QStandardItem(sample))
+        self._parent = parent
+        self._location = None
 
         if annotations is not None:
             self.add_annotations(annotations)
 
         self._make_connections()
+
+    def populate_samples(self, samples):
+        m = self._ui.comboBoxSample.model()
+
+        for sample in samples:
+            m.appendRow(QtGui.QStandardItem(sample))
+
+    def set_location(self, location):
+        self._location = location
 
     def _make_connections(self):
         self._ui.pushButtonThumbnailFile.clicked.connect(self._open_thumbnail_file)
@@ -43,7 +50,17 @@ class ViewsWidget(QtWidgets.QWidget):
             "path": self._ui.lineEditPath.text(),
             "sample": self._ui.comboBoxSample.currentText(),
             "thumbnail": self._ui.lineEditThumbnail.text(),
+            "description": self._ui.plainTextEditDescription.toPlainText(),
         }
+
+    def from_dict(self, data):
+        self._ui.comboBoxAnnotation.setCurrentText(data["annotation"])
+        self._ui.lineEditPath.setText(data["path"])
+        self._ui.comboBoxSample.blockSignals(True)
+        self._ui.comboBoxSample.setCurrentText(data["sample"])
+        self._ui.comboBoxSample.blockSignals(False)
+        self._ui.lineEditThumbnail.setText(data["thumbnail"])
+        self._ui.plainTextEditDescription.setPlainText(data.get("description", ""))
 
     def add_annotations(self, annotations):
         m = self._ui.comboBoxAnnotation.model()
@@ -77,16 +94,15 @@ class ViewsWidget(QtWidgets.QWidget):
             m.takeRow(remove_row)
 
     def _open_view_file(self):
-        self._open_file(self._ui.lineEditPath)
+        self._open_file(self._ui.lineEditPath, "Locate scaffold view file")
 
     def _open_thumbnail_file(self):
-        self._open_file(self._ui.lineEditThumbnail)
+        self._open_file(self._ui.lineEditThumbnail, "Locate scaffold view thumbnail file")
 
-    def _open_file(self, line_editor):
-        result = QtWidgets.QFileDialog.getOpenFileName(self, "Open annotation map file", self._previous_location)
+    def _open_file(self, line_editor, title):
+        result = QtWidgets.QFileDialog.getOpenFileName(self, title, self._parent.previous_location())
         file_name = result[0]
         if file_name:
-            self._previous_location = os.path.dirname(file_name)
-            with open(file_name) as f:
-                # check if it's view/thumbnail file
-                line_editor.setText(file_name)
+            self._parent.set_previous_location(os.path.dirname(file_name))
+            relative_path = relative_to_dataset_dir(file_name)
+            line_editor.setText(relative_path)

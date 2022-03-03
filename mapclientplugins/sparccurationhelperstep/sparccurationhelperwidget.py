@@ -43,6 +43,8 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         # self._ui.tableViewScaffoldAnnotations.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         # self._ui.tableViewScaffoldAnnotations.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
+        self._ui.tabContextAnnotation.update_info(location)
+
         self._make_connections()
         self._update_ui()
 

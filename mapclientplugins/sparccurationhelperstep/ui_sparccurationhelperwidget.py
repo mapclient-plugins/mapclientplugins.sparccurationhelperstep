@@ -27,17 +27,12 @@ class Ui_SparcCurationHelperWidget(object):
         self.tabWidget.setObjectName(u"tabWidget")
         self.tabScaffoldAnnotation = ScaffoldAnnotationWidget()
         self.tabScaffoldAnnotation.setObjectName(u"tabScaffoldAnnotation")
-        self.gridLayout3 = QGridLayout(self.tabScaffoldAnnotation)
-        self.gridLayout3.setObjectName(u"gridLayout3")
         self.tabWidget.addTab(self.tabScaffoldAnnotation, "")
         self.tabPlotAnnotation = QWidget()
         self.tabPlotAnnotation.setObjectName(u"tabPlotAnnotation")
         self.tabWidget.addTab(self.tabPlotAnnotation, "")
         self.tabContextAnnotation = ContextAnnotationWidget()
         self.tabContextAnnotation.setObjectName(u"tabContextAnnotation")
-        self.verticalLayout_3 = QVBoxLayout(self.tabContextAnnotation)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.tabWidget.addTab(self.tabContextAnnotation, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
@@ -59,7 +54,7 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.retranslateUi(SparcCurationHelperWidget)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(SparcCurationHelperWidget)
