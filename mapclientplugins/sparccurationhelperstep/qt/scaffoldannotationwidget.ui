@@ -118,21 +118,15 @@
      <layout class="QGridLayout" name="gridLayout2">
       <item row="0" column="1">
        <layout class="QGridLayout" name="gridLayoutButtons">
-        <item row="0" column="2">
-         <widget class="QPushButton" name="annotate_scaffold_button">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+        <item row="1" column="1">
+         <widget class="QPushButton" name="pushButtonFixAllErrors">
           <property name="text">
-           <string>Annotate Scaffold</string>
+           <string>Fix All Errors</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QPushButton" name="buttonFixError">
+         <widget class="QPushButton" name="pushButtonFixError">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -141,20 +135,6 @@
           </property>
           <property name="text">
            <string>Fix Error</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="buttonFixAllErrors">
-          <property name="text">
-           <string>Fix All Errors</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="pushButton_3">
-          <property name="text">
-           <string>Don't Push</string>
           </property>
          </widget>
         </item>

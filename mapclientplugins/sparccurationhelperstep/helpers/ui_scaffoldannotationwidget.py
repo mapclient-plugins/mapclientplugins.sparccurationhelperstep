@@ -99,32 +99,20 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.gridLayout2.setObjectName(u"gridLayout2")
         self.gridLayoutButtons = QGridLayout()
         self.gridLayoutButtons.setObjectName(u"gridLayoutButtons")
-        self.annotate_scaffold_button = QPushButton(self.groupBoxErrors)
-        self.annotate_scaffold_button.setObjectName(u"annotate_scaffold_button")
+        self.pushButtonFixAllErrors = QPushButton(self.groupBoxErrors)
+        self.pushButtonFixAllErrors.setObjectName(u"pushButtonFixAllErrors")
+
+        self.gridLayoutButtons.addWidget(self.pushButtonFixAllErrors, 1, 1, 1, 1)
+
+        self.pushButtonFixError = QPushButton(self.groupBoxErrors)
+        self.pushButtonFixError.setObjectName(u"pushButtonFixError")
         sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.annotate_scaffold_button.sizePolicy().hasHeightForWidth())
-        self.annotate_scaffold_button.setSizePolicy(sizePolicy2)
+        sizePolicy2.setHeightForWidth(self.pushButtonFixError.sizePolicy().hasHeightForWidth())
+        self.pushButtonFixError.setSizePolicy(sizePolicy2)
 
-        self.gridLayoutButtons.addWidget(self.annotate_scaffold_button, 0, 2, 1, 1)
-
-        self.buttonFixError = QPushButton(self.groupBoxErrors)
-        self.buttonFixError.setObjectName(u"buttonFixError")
-        sizePolicy2.setHeightForWidth(self.buttonFixError.sizePolicy().hasHeightForWidth())
-        self.buttonFixError.setSizePolicy(sizePolicy2)
-
-        self.gridLayoutButtons.addWidget(self.buttonFixError, 0, 1, 1, 1)
-
-        self.buttonFixAllErrors = QPushButton(self.groupBoxErrors)
-        self.buttonFixAllErrors.setObjectName(u"buttonFixAllErrors")
-
-        self.gridLayoutButtons.addWidget(self.buttonFixAllErrors, 1, 1, 1, 1)
-
-        self.pushButton_3 = QPushButton(self.groupBoxErrors)
-        self.pushButton_3.setObjectName(u"pushButton_3")
-
-        self.gridLayoutButtons.addWidget(self.pushButton_3, 1, 2, 1, 1)
+        self.gridLayoutButtons.addWidget(self.pushButtonFixError, 0, 1, 1, 1)
 
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -160,9 +148,7 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.groupBox.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Manual annotation:", None))
         self.pushButtonApply.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Apply", None))
         self.groupBoxErrors.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Errors:", None))
-        self.annotate_scaffold_button.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Annotate Scaffold", None))
-        self.buttonFixError.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Fix Error", None))
-        self.buttonFixAllErrors.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Fix All Errors", None))
-        self.pushButton_3.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Don't Push", None))
+        self.pushButtonFixAllErrors.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Fix All Errors", None))
+        self.pushButtonFixError.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Fix Error", None))
     # retranslateUi
 

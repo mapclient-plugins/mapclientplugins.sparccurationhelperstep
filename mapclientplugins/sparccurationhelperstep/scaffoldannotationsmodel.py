@@ -68,10 +68,18 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
             self._root_item.append_child(item)
             view_filenames = data.get_derived_from_filenames(filename)
             for view in view_filenames:
+                view_source = data.get_source_of_filenames(view)
+                if len(view_source) != 1 or filename not in view_source:
+                    print("Failed to find view source ...")
+                    continue
                 view_item = ScaffoldAnnotationItem([view])
                 item.append_child(view_item)
                 thumbnail_filenames = data.get_derived_from_filenames(view)
                 for thumbnail_filename in thumbnail_filenames:
+                    thumbnail_source = data.get_source_of_filenames(thumbnail_filename)
+                    if len(thumbnail_source) != 1 or view not in thumbnail_source:
+                        print("Failed to find thumbnail source ...")
+                        continue
                     thumbnail_item = ScaffoldAnnotationItem([thumbnail_filename])
                     view_item.append_child(thumbnail_item)
 
