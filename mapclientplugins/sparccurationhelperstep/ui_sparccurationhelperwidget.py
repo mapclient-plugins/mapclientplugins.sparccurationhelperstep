@@ -54,7 +54,7 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.retranslateUi(SparcCurationHelperWidget)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(SparcCurationHelperWidget)

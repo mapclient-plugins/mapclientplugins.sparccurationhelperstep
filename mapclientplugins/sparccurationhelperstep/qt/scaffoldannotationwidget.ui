@@ -72,17 +72,17 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Manual assignment:</string>
+      <string>Manual annotation:</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QComboBox" name="comboBoxScaffoldMeta"/>
+       <widget class="QComboBox" name="comboBoxAnnotationSubject"/>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBoxScaffoldView"/>
+       <widget class="QComboBox" name="comboBoxSAnnotationPredicate"/>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBoxScaffoldThumbnail"/>
+       <widget class="QComboBox" name="comboBoxAnnotationObject"/>
       </item>
       <item>
        <widget class="QPushButton" name="pushButtonApply">

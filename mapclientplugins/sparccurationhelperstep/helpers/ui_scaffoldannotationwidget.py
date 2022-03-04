@@ -65,20 +65,20 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.groupBox.setObjectName(u"groupBox")
         self.horizontalLayout_3 = QHBoxLayout(self.groupBox)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.comboBoxScaffoldMeta = QComboBox(self.groupBox)
-        self.comboBoxScaffoldMeta.setObjectName(u"comboBoxScaffoldMeta")
+        self.comboBoxAnnotationSubject = QComboBox(self.groupBox)
+        self.comboBoxAnnotationSubject.setObjectName(u"comboBoxAnnotationSubject")
 
-        self.horizontalLayout_3.addWidget(self.comboBoxScaffoldMeta)
+        self.horizontalLayout_3.addWidget(self.comboBoxAnnotationSubject)
 
-        self.comboBoxScaffoldView = QComboBox(self.groupBox)
-        self.comboBoxScaffoldView.setObjectName(u"comboBoxScaffoldView")
+        self.comboBoxSAnnotationPredicate = QComboBox(self.groupBox)
+        self.comboBoxSAnnotationPredicate.setObjectName(u"comboBoxSAnnotationPredicate")
 
-        self.horizontalLayout_3.addWidget(self.comboBoxScaffoldView)
+        self.horizontalLayout_3.addWidget(self.comboBoxSAnnotationPredicate)
 
-        self.comboBoxScaffoldThumbnail = QComboBox(self.groupBox)
-        self.comboBoxScaffoldThumbnail.setObjectName(u"comboBoxScaffoldThumbnail")
+        self.comboBoxAnnotationObject = QComboBox(self.groupBox)
+        self.comboBoxAnnotationObject.setObjectName(u"comboBoxAnnotationObject")
 
-        self.horizontalLayout_3.addWidget(self.comboBoxScaffoldThumbnail)
+        self.horizontalLayout_3.addWidget(self.comboBoxAnnotationObject)
 
         self.pushButtonApply = QPushButton(self.groupBox)
         self.pushButtonApply.setObjectName(u"pushButtonApply")
@@ -157,7 +157,7 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.groupBoxScaffoldAnntotations.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Scaffold annotations:", None))
         self.thumbnail_preview_label.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Thumbnail preview:", None))
         self.labelThumbnailPreview.setText("")
-        self.groupBox.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Manual assignment:", None))
+        self.groupBox.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Manual annotation:", None))
         self.pushButtonApply.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Apply", None))
         self.groupBoxErrors.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Errors:", None))
         self.annotate_scaffold_button.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Annotate Scaffold", None))

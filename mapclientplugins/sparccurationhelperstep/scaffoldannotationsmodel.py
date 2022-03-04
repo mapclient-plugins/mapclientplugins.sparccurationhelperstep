@@ -66,16 +66,14 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
         for filename in filenames:
             item = ScaffoldAnnotationItem([filename])
             self._root_item.append_child(item)
-            view_filenames = data.get_derived_filenames(filename)
-            if view_filenames:
-                for view in view_filenames:
-                    view_item = ScaffoldAnnotationItem([view])
-                    item.append_child(view_item)
-                    thumbnail_filenames = data.get_derived_filenames(view)
-                    if thumbnail_filenames:
-                        for thumbnail_filename in thumbnail_filenames:
-                            thumbnail_item = ScaffoldAnnotationItem([thumbnail_filename])
-                            view_item.append_child(thumbnail_item)
+            view_filenames = data.get_derived_from_filenames(filename)
+            for view in view_filenames:
+                view_item = ScaffoldAnnotationItem([view])
+                item.append_child(view_item)
+                thumbnail_filenames = data.get_derived_from_filenames(view)
+                for thumbnail_filename in thumbnail_filenames:
+                    thumbnail_item = ScaffoldAnnotationItem([thumbnail_filename])
+                    view_item.append_child(thumbnail_item)
 
         self.endResetModel()
 
