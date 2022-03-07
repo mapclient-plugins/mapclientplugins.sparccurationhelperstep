@@ -139,8 +139,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
     def _fix_error_button_clicked(self):
         index = self._ui.listViewErrors.currentIndex()
         current_error = self._ui.listViewErrors.model().data(index, QtCore.Qt.UserRole)
-        print(current_error)
-        confirmationMessage = get_confirmation_message("Something")
+        confirmationMessage = get_confirmation_message(current_error)
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
             self._fix_error(current_error)
