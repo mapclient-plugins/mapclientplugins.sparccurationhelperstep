@@ -2,7 +2,6 @@ import os.path
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-from mapclientplugins.sparccurationhelperstep.helpers.common import relative_to_dataset_dir
 from mapclientplugins.sparccurationhelperstep.helpers.ui_viewswidget import Ui_ViewsWidget
 
 
@@ -104,5 +103,5 @@ class ViewsWidget(QtWidgets.QWidget):
         file_name = result[0]
         if file_name:
             self._parent.set_previous_location(os.path.dirname(file_name))
-            relative_path = relative_to_dataset_dir(file_name)
+            relative_path = os.path.relpath(file_name, self._location)
             line_editor.setText(relative_path)
