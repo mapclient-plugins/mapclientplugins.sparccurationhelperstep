@@ -24,7 +24,7 @@
        <string>Scaffold Annotation</string>
       </attribute>
      </widget>
-     <widget class="QWidget" name="tabPlotAnnotation">
+     <widget class="PlotAnnotationWidget" name="tabPlotAnnotation">
       <attribute name="title">
        <string>Plot Annotation</string>
       </attribute>
@@ -73,6 +73,12 @@
    <class>ScaffoldAnnotationWidget</class>
    <extends>QWidget</extends>
    <header>mapclientplugins/sparccurationhelperstep/helpers/scaffoldannotationwidget.h</header>
+   <container>1</container>
+  </customwidget>
+    <customwidget>
+   <class>PlotAnnotationWidget</class>
+   <extends>QWidget</extends>
+   <header>mapclientplugins/sparccurationhelperstep/helpers/plotannotationwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -1,4 +1,3 @@
-
 from PySide2 import QtWidgets
 
 from mapclientplugins.sparccurationhelperstep.ui_sparccurationhelperwidget import Ui_SparcCurationHelperWidget
@@ -22,6 +21,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
     def set_dataset_location(self, location):
         self._ui.tabContextAnnotation.update_info(location)
         self._ui.tabScaffoldAnnotation.update_annotations(location)
+        self._ui.tabPlotAnnotation.update_annotations(location)
 
     def register_done_execution(self, callback):
         self._callback = callback
