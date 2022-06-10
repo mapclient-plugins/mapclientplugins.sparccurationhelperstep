@@ -188,7 +188,7 @@ The *View* part adds information on a view of the scaffold.
 The *Add* button creates a new view entry.
 Each view that has contextual information will have its own entry.
 
-For a sample the following information can be set:
+For a view the following information can be set:
 
 * A path,
 * A thumbnail,
