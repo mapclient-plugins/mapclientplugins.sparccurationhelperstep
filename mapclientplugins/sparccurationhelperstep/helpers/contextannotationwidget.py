@@ -217,6 +217,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         sample = SamplesWidget(self)
         sample.view_changed.connect(self._sample_view_changed)
         self._ui.tabWidgetSamples.addTab(sample, header)
+        self._ui.tabWidgetSamples.setCurrentWidget(sample)
         self._add_sample_to_views(header)
         return sample
 
@@ -231,6 +232,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         view.set_location(self._location)
         view.sample_changed.connect(self._view_sample_changed)
         self._ui.tabWidgetViews.addTab(view, header)
+        self._ui.tabWidgetViews.setCurrentWidget(view)
         self._add_view_to_samples(header)
         return view
 
