@@ -82,9 +82,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonViewsAdd.clicked.connect(self._views_add_clicked)
         self._ui.tabWidgetSamples.tabCloseRequested.connect(self._sample_tab_close_requested)
         self._ui.tabWidgetViews.tabCloseRequested.connect(self._view_tab_close_requested)
-        self._ui.pushButtonWriteAnnotation.clicked.connect(self._write_annotation_clicked)
 
-    def _write_annotation_clicked(self):
+    def write_context_annotation(self):
         context_heading = self._ui.lineEditSummaryHeading.text()
         context_description = self._ui.plainTextEditSummaryDescription.toPlainText()
 

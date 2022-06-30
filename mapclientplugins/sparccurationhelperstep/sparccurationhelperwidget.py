@@ -27,4 +27,5 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._callback = callback
 
     def _done_button_clicked(self):
+        self._ui.tabContextAnnotation.write_context_annotation()
         self._callback()

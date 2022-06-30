@@ -127,11 +127,6 @@ class Ui_ContextAnnotationWidget(object):
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 
-        self.pushButtonWriteAnnotation = QPushButton(ContextAnnotationWidget)
-        self.pushButtonWriteAnnotation.setObjectName(u"pushButtonWriteAnnotation")
-
-        self.horizontalLayout_4.addWidget(self.pushButtonWriteAnnotation)
-
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
@@ -163,6 +158,5 @@ class Ui_ContextAnnotationWidget(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSamples), QCoreApplication.translate("ContextAnnotationWidget", u"Samples", None))
         self.pushButtonViewsAdd.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Add", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabViews), QCoreApplication.translate("ContextAnnotationWidget", u"Views", None))
-        self.pushButtonWriteAnnotation.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Write Annotation", None))
     # retranslateUi
 
