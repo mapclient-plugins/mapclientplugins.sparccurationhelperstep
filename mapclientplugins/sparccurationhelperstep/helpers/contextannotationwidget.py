@@ -82,9 +82,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonViewsAdd.clicked.connect(self._views_add_clicked)
         self._ui.tabWidgetSamples.tabCloseRequested.connect(self._sample_tab_close_requested)
         self._ui.tabWidgetViews.tabCloseRequested.connect(self._view_tab_close_requested)
-        self._ui.pushButtonWriteAnnotation.clicked.connect(self._write_annotation_clicked)
 
-    def _write_annotation_clicked(self):
+    def write_context_annotation(self):
         context_heading = self._ui.lineEditSummaryHeading.text()
         context_description = self._ui.plainTextEditSummaryDescription.toPlainText()
 
@@ -218,6 +217,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         sample = SamplesWidget(self)
         sample.view_changed.connect(self._sample_view_changed)
         self._ui.tabWidgetSamples.addTab(sample, header)
+        self._ui.tabWidgetSamples.setCurrentWidget(sample)
         self._add_sample_to_views(header)
         return sample
 
@@ -232,6 +232,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         view.set_location(self._location)
         view.sample_changed.connect(self._view_sample_changed)
         self._ui.tabWidgetViews.addTab(view, header)
+        self._ui.tabWidgetViews.setCurrentWidget(view)
         self._add_view_to_samples(header)
         return view
 
