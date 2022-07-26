@@ -3,7 +3,7 @@ MAP Client Plugin Step
 """
 import json
 
-from PySide2 import QtGui
+from PySide2 import QtGui, QtWidgets, QtCore
 
 from mapclient.mountpoints.workflowstep import WorkflowStepMountPoint
 from mapclientplugins.sparccurationhelperstep.configuredialog import ConfigureDialog
@@ -49,10 +49,12 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         """
         # Put your execute step code here before calling the '_doneExecution' method.
         # self._model = SparcCurationHelperWidget(self._portData0, self._location, self._config['identifier'])
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self._view = SparcCurationHelperWidget()
         self._view.register_done_execution(self._doneExecution)
         self._view.set_dataset_location(self._port0_inputFileDir)
         self._setCurrentWidget(self._view)
+        QtWidgets.QApplication.restoreOverrideCursor()
 
     def setPortData(self, index, dataIn):
         """
