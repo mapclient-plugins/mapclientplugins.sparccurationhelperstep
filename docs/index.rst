@@ -86,6 +86,8 @@ It is very easy to make nonsensical statements that will harm computer understan
 The automatic annotation tool in the Errors section will work in 99% of cases and should alleviate the need for using the manual annotation functionality.
 
 In the errors section we will see any errors listed about the current scaffold annotation.
+When the plugin is loaded it automatically scans the dataset and checks for annotation errors.
+This means we can already have errors showing when we first see the user interface.
 We can fix these errors using the **Fix All Errors** button.
 Clicking on the **Fix All Errors** button will pop-up a confirmation dialog, click the **Yes** button to allow the magic tool to fix errors.
 Alternatively, click the **No** button to cancel the fixing of errors.
@@ -93,7 +95,9 @@ Alternatively, click the **No** button to cancel the fixing of errors.
 .. note::
 
   The curation helper tool works on one layer of errors at a time.
-  So you will have to use the Fix All Errors button multiple times, until the tool stops reporting new errors.
+  When we fix one layer of errors the next layer may have more errors than the previous layer.
+  This means, when we use the **Fix All Errors** button, we can have more errors than what we started with.
+  So, you may have to use the **Fix All Errors** button multiple times, until the tool stops reporting new errors.
   If the reported errors are not changing then we need to use the manual annotation tool to make the correct annotations.
 
 .. _fig-mcp-sparc-curation-helper-annotated-scaffold-dialog:
