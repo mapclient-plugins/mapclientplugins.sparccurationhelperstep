@@ -43,6 +43,11 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.pushButtonDocumentation = QPushButton(SparcCurationHelperWidget)
+        self.pushButtonDocumentation.setObjectName(u"pushButtonDocumentation")
+
+        self.horizontalLayout.addWidget(self.pushButtonDocumentation)
+
         self.pushButtonDone = QPushButton(SparcCurationHelperWidget)
         self.pushButtonDone.setObjectName(u"pushButtonDone")
 
@@ -65,6 +70,7 @@ class Ui_SparcCurationHelperWidget(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabScaffoldAnnotation), QCoreApplication.translate("SparcCurationHelperWidget", u"Scaffold Annotation", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPlotAnnotation), QCoreApplication.translate("SparcCurationHelperWidget", u"Plot Annotation", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabContextAnnotation), QCoreApplication.translate("SparcCurationHelperWidget", u"Context Annotation", None))
+        self.pushButtonDocumentation.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Online Documentation", None))
         self.pushButtonDone.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Done", None))
     # retranslateUi
 

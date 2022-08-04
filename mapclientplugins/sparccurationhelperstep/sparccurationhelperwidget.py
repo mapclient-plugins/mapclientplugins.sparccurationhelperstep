@@ -1,3 +1,4 @@
+import webbrowser
 
 from PySide2 import QtWidgets
 
@@ -17,6 +18,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         self._make_connections()
 
     def _make_connections(self):
+        self._ui.pushButtonDocumentation.clicked.connect(self._documentationButtonClicked)
         self._ui.pushButtonDone.clicked.connect(self._done_button_clicked)
 
     def set_dataset_location(self, location):
@@ -25,6 +27,9 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
 
     def register_done_execution(self, callback):
         self._callback = callback
+
+    def _documentationButtonClicked(self):
+        webbrowser.open("https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.sparccurationhelperstep/docs/index.html")
 
     def _done_button_clicked(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
