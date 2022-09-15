@@ -1,6 +1,6 @@
 import webbrowser
 
-from PySide2 import QtWidgets
+from PySide2 import QtCore, QtWidgets
 
 from mapclientplugins.sparccurationhelperstep.ui_sparccurationhelperwidget import Ui_SparcCurationHelperWidget
 
