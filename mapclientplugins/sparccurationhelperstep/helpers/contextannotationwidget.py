@@ -57,7 +57,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
                         context_info.from_dict(json_data)
                         if json_data["metadata"] in self._ui.comboBoxContextMetadata.currentText():
                             self._current_context_info = context_info
-        
+
         if self._current_context_info:
             self._populate_ui(self._current_context_info)
 
@@ -108,40 +108,10 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._ui.tabWidgetViews.tabCloseRequested.connect(self._view_tab_close_requested)
         self._ui.comboBoxContextMetadata.currentTextChanged.connect(self._on_metadata_changed)
 
-    def create_annotation_data_json(self, data):
-        views = data["views"]
-        samples = data["samples"]
-        annotation_data = {
-            "version": "0.2.0",
-            "id": "sparc.science.annotation_data",
-        }
-
-        def _add_entry(_annotation_data, annotation, value):
-            if annotation and annotation != "--":
-                if annotation in _annotation_data:
-                    _annotation_data[annotation].append(value)
-                else:
-                    _annotation_data[annotation] = [value]
-
-        for v in views:
-            _add_entry(annotation_data, v["annotation"], v["id"])
-            if v["annotation"] != "--":
-                context_annotations.update_anatomical_entity(os.path.join(self._location, v["path"]), v["annotation"])
-
-        for s in samples:
-            _add_entry(annotation_data, s["annotation"], s["id"])
-        
-        return annotation_data
-        
     def write_context_annotation(self):
         self.update_current_context_info()
         for context_info in self._context_info_list:
-            context_info_location = context_annotations.get_context_info_file(context_info._fileName)
-            data = context_info.get_context_json()
-            context_annotations.write_context_info(context_info_location, data)
-            annotation_data = self.create_annotation_data_json(data)
-            context_annotations.update_additional_type(context_info_location)
-            context_annotations.update_supplemental_json(context_info_location, json.dumps(annotation_data))
+            context_annotations.update_context_info(context_info)
 
     def _open_annotation_map_file(self):
         _is_annotation_csv_file = False
@@ -178,7 +148,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._update_view_annotations()
 
     def _on_metadata_changed(self, current_text):
-        self.update_current_context_info()
+        if self._current_context_info:
+            self.update_current_context_info()
         for context_info in self._context_info_list:
             if context_info._metadata_file in current_text:
                 self._current_context_info = context_info
@@ -310,6 +281,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         tab_bar = self._ui.tabWidgetViews.tabBar()
         count = tab_bar.count()
         return [tab_bar.tabText(i) for i in range(count)]
+
 
 def _build_list_model(annotation_items):
     model = QtGui.QStandardItemModel()
