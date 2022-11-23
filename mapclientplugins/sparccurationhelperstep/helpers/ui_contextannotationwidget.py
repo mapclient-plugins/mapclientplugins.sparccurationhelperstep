@@ -77,15 +77,27 @@ class Ui_ContextAnnotationWidget(object):
 
         self.gridLayout.addWidget(self.lineEditSummaryHeading, 0, 1, 1, 1)
 
+        self.labelSummaryBanner = QLabel(self.tabSummary)
+        self.labelSummaryBanner.setObjectName(u"labelSummaryBanner")
+
+        self.gridLayout.addWidget(self.labelSummaryBanner, 1, 0, 1, 1)
+
+        self.comboBoxBanner = QComboBox(self.tabSummary)
+        self.comboBoxBanner.setObjectName(u"comboBoxBanner")
+        sizePolicy.setHeightForWidth(self.comboBoxBanner.sizePolicy().hasHeightForWidth())
+        self.comboBoxBanner.setSizePolicy(sizePolicy)
+
+        self.gridLayout.addWidget(self.comboBoxBanner, 1, 1, 1, 1)
+
         self.labelSummaryDescription = QLabel(self.tabSummary)
         self.labelSummaryDescription.setObjectName(u"labelSummaryDescription")
 
-        self.gridLayout.addWidget(self.labelSummaryDescription, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.labelSummaryDescription, 2, 0, 1, 1)
 
         self.plainTextEditSummaryDescription = QPlainTextEdit(self.tabSummary)
         self.plainTextEditSummaryDescription.setObjectName(u"plainTextEditSummaryDescription")
 
-        self.gridLayout.addWidget(self.plainTextEditSummaryDescription, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.plainTextEditSummaryDescription, 2, 1, 1, 1)
 
         self.tabWidget.addTab(self.tabSummary, "")
         self.tabSamples = QWidget()
@@ -173,6 +185,7 @@ class Ui_ContextAnnotationWidget(object):
         self.pushButtonAnnotationMapFile.setText(QCoreApplication.translate("ContextAnnotationWidget", u"...", None))
         self.labelContextMetadata.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Matadata file for context:", None))
         self.labelSummaryHeading.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Heading:", None))
+        self.labelSummaryBanner.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Banner:", None))
         self.labelSummaryDescription.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Description:", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSummary), QCoreApplication.translate("ContextAnnotationWidget", u"Summary", None))
         self.pushButtonSamplesAdd.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Add", None))

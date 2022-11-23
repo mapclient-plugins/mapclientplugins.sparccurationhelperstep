@@ -32,13 +32,17 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def update_info(self, location):
         self._location = location
-        max_size = convert_to_bytes('3MiB')
-        OnDiskFiles().setup_dataset(location, max_size)
         metadata_files = OnDiskFiles().get_scaffold_data().get_metadata_files()
-        subject_list = [*metadata_files]
+        metadata_list = [*metadata_files]
 
-        subject_model = _build_list_model(subject_list)
-        self._ui.comboBoxContextMetadata.setModel(subject_model)
+        metadata_list_model = _build_list_model(metadata_list)
+        self._ui.comboBoxContextMetadata.setModel(metadata_list_model)
+
+        thumbnail_files = OnDiskFiles().get_scaffold_data().get_thumbnail_files()
+        thumbnail_list = [*thumbnail_files]
+
+        thumbnail_list_model = _build_list_model(thumbnail_list)
+        self._ui.comboBoxBanner.setModel(thumbnail_list_model)
 
         # Initial context data.
         for metadata_file in metadata_files:
@@ -107,6 +111,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._ui.tabWidgetSamples.tabCloseRequested.connect(self._sample_tab_close_requested)
         self._ui.tabWidgetViews.tabCloseRequested.connect(self._view_tab_close_requested)
         self._ui.comboBoxContextMetadata.currentTextChanged.connect(self._on_metadata_changed)
+        self._ui.comboBoxBanner.currentTextChanged.connect(self._on_banner_changed)
 
     def write_context_annotation(self):
         self.update_current_context_info()
@@ -156,6 +161,10 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
                 self._populate_ui(self._current_context_info)
                 return
         self.clean_ui()
+
+    def _on_banner_changed(self, current_text):
+        if self._current_context_info:
+            self._current_context_info._banner = os.path.relpath(current_text, self._location)
 
     def update_current_context_info(self):
         self._current_context_info._context_heading = self._ui.lineEditSummaryHeading.text()
