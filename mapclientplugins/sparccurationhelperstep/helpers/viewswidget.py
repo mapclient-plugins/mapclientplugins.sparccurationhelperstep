@@ -1,6 +1,6 @@
 import os.path
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_viewswidget import Ui_ViewsWidget
 

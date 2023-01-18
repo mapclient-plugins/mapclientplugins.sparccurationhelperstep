@@ -1,7 +1,7 @@
 
 import os
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from mapclientplugins.sparccurationhelperstep.helpers.common import relative_to_dataset_dir
 from mapclientplugins.sparccurationhelperstep.helpers.ui_sampleswidget import Ui_SamplesWidget

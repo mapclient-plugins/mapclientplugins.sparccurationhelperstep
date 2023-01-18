@@ -2,7 +2,7 @@ import csv
 import json
 import os.path
 
-from PySide2 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 from sparc.curation.tools.utilities import convert_to_bytes
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_contextannotationwidget import Ui_ContextAnnotationWidget
