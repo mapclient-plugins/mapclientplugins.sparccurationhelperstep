@@ -2,7 +2,7 @@ import os.path
 
 from PySide2 import QtCore
 
-_HEADERS = ['Annotations']
+_HEADER = 'Annotations'
 
 
 class ScaffoldAnnotationItem(object):
@@ -63,7 +63,7 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
         self.reset_internal_data()
 
     def reset_internal_data(self):
-        self._root_item = ScaffoldAnnotationItem('', _HEADERS[0])
+        self._root_item = ScaffoldAnnotationItem('', _HEADER)
 
     def reset_data(self, data):
         self.beginResetModel()
@@ -75,15 +75,20 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
             item = ScaffoldAnnotationItem(metadata_filename, metadata)
             self._root_item.append_child(item)
             view_filenames = data.get_source_of_filenames(metadata_filename)
-            for view in view_filenames:
-                view_filename = os.path.join(manifest_dir, view)
-                view_item = ScaffoldAnnotationItem(view_filename, view)
-                item.append_child(view_item)
-                thumbnail_filenames = data.get_source_of_filenames(view_filename)
-                for thumbnail in thumbnail_filenames:
-                    thumbnail_filename = os.path.join(manifest_dir, thumbnail)
-                    thumbnail_item = ScaffoldAnnotationItem(thumbnail_filename, thumbnail)
-                    view_item.append_child(thumbnail_item)
+
+            for view_list in view_filenames:
+                # View filenames can have multiple lines separated by a newline.
+                for view in view_list.split('\n'):
+                    view_filenames = view_filenames[0].split('\n')
+                    view_filename = os.path.join(manifest_dir, view)
+                    view_item = ScaffoldAnnotationItem(view_filename, view)
+                    item.append_child(view_item)
+                    thumbnail_filenames = data.get_source_of_filenames(view_filename)
+                    for thumbnail in thumbnail_filenames:
+                        if not isinstance(thumbnail, float):
+                            thumbnail_filename = os.path.join(manifest_dir, thumbnail)
+                            thumbnail_item = ScaffoldAnnotationItem(thumbnail_filename, thumbnail)
+                            view_item.append_child(thumbnail_item)
 
         self.endResetModel()
 
