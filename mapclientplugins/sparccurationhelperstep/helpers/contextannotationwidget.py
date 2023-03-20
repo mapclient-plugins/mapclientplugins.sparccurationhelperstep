@@ -1,6 +1,9 @@
 import csv
 import json
 import os.path
+import pathlib
+
+from packaging.version import Version
 
 from PySide2 import QtWidgets, QtGui, QtCore
 from sparc.curation.tools.utilities import convert_to_bytes
@@ -26,7 +29,6 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._previous_location = QtCore.QDir.homePath()
         self._scaffold_annotations = None
         self._context_info_list = []
-        self._current_context_info = None
 
         self._make_connections()
 
@@ -36,38 +38,66 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         metadata_list = [*metadata_files]
 
         metadata_list_model = _build_list_model(metadata_list)
+        self._ui.comboBoxContextMetadata.blockSignals(True)
         self._ui.comboBoxContextMetadata.setModel(metadata_list_model)
+        self._ui.comboBoxContextMetadata.blockSignals(False)
 
         thumbnail_files = OnDiskFiles().get_scaffold_data().get_thumbnail_files()
         thumbnail_list = [*thumbnail_files]
 
         thumbnail_list_model = _build_list_model(thumbnail_list)
-        self._ui.comboBoxBanner.setModel(thumbnail_list_model)
 
-        # Initial context data.
-        for metadata_file in metadata_files:
-            metadata_filename = os.path.basename(metadata_file)
-            context_info_filename = metadata_filename.split(".")[0]+"_context_info.json"
-            metadata_file_path = os.path.join("derivative", metadata_filename)
-            self._context_info_list.append(ContextInfoAnnotation(metadata_file_path, context_info_filename))
-
-        # Find context data.
         context_files = context_annotations.search_for_context_data_files(location, convert_to_bytes("2MiB"))
+        # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
         for context_file in context_files:
             with open(context_file, encoding='utf-8') as f:
                 json_data = json.load(f)
-                for context_info in self._context_info_list:
-                    if json_data["metadata"] == context_info._metadata_file:
-                        context_info.from_dict(json_data)
-                        if json_data["metadata"] in self._ui.comboBoxContextMetadata.currentText():
-                            self._current_context_info = context_info
+                if Version(json_data['version']) == Version("0.1.0"):
+                    # Associate this context information file with a metadata file in the same directory.
+                    # Or, with any other single context information file.  Otherwise, report warning.
+                    context_dir = os.path.dirname(context_file)
+                    matching = [m for m in metadata_files if os.path.dirname(m) == context_dir]
+                    metadata_file = None
+                    if len(matching) == 1:
+                        metadata_file = matching[0]
+                    else:
+                        if len(metadata_files) == 1:
+                            metadata_file = metadata_files[0]
 
-        if self._current_context_info:
-            self._populate_ui(self._current_context_info)
+                    if metadata_file is None:
+                        print('Warning: Could not match version 0.1.0 context information file to a scaffold metadata file, ignoring.')
+                    else:
+                        context_info = ContextInfoAnnotation(self._to_seralisable_path(metadata_file), context_file)
+                        context_info.update(json_data)
+                        self._context_info_list.append(context_info)
+                elif Version(json_data['version']) >= Version("0.2.0"):
+                    context_info = ContextInfoAnnotation(self._to_seralisable_path(json_data['metadata']), context_file)
+                    context_info.from_dict(json_data)
+                    self._context_info_list.append(context_info)
+
+        # Initial context data for metadata files without an associated existing context info file.
+        for metadata_file in metadata_files:
+            metadata_filename = os.path.basename(metadata_file)
+            metadata_dir = os.path.dirname(metadata_file)
+            context_info_filename = metadata_filename.split(".")[0]+"_context_info.json"
+            metadata_file_path = os.path.join(metadata_dir, metadata_filename)
+            metadata_path = self._to_seralisable_path(metadata_file_path)
+            found = [ci.get_metadata_file() == metadata_path for ci in self._context_info_list]
+            if not any(found):
+                self._context_info_list.append(ContextInfoAnnotation(metadata_path, context_info_filename))
+
+        # Basis of the interface relies on the context info list being the same size as the metadata files list.
+        assert len(self._context_info_list) == len(metadata_files)
+
+        self._ui.comboBoxBanner.setModel(thumbnail_list_model)
+        self._populate_ui(self._current_context_info())
 
         # Find annotation file.
         annotation_files = context_annotations.search_for_annotation_csv_files(location, convert_to_bytes("2MiB"))
         self._load_view_annotations(annotation_files)
+
+    def _current_context_info(self):
+        return self._context_info_list[self._ui.comboBoxContextMetadata.currentIndex()]
 
     def previous_location(self):
         return self._previous_location
@@ -83,12 +113,12 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def _populate_ui(self, data):
         self.clean_ui()
-        self._ui.lineEditSummaryHeading.setText(data._context_heading)
-        self._ui.plainTextEditSummaryDescription.setPlainText(data._context_description)
-        for view in data._views:
+        self._ui.lineEditSummaryHeading.setText(data.get_heading())
+        self._ui.plainTextEditSummaryDescription.setPlainText(data.get_description())
+        for view in data.get_views():
             self._create_view(view["id"])
 
-        for sample in data._samples:
+        for sample in data.get_samples():
             self._create_sample(sample["id"])
             self._add_sample_to_views(sample["id"])
 
@@ -96,11 +126,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         for view_header in view_headers:
             self._add_view_to_samples(view_header)
 
-        for i, view in enumerate(data._views):
+        for i, view in enumerate(data.get_views()):
             v = self._ui.tabWidgetViews.widget(i)
             v.from_dict(view)
 
-        for i, sample in enumerate(data._samples):
+        for i, sample in enumerate(data.get_samples()):
             s = self._ui.tabWidgetSamples.widget(i)
             s.from_dict(sample)
 
@@ -152,23 +182,19 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._scaffold_annotations = scaffold_annotations
         self._update_view_annotations()
 
-    def _on_metadata_changed(self, current_text):
-        if self._current_context_info:
-            self.update_current_context_info()
-        for context_info in self._context_info_list:
-            if context_info._metadata_file in current_text:
-                self._current_context_info = context_info
-                self._populate_ui(self._current_context_info)
-                return
-        self.clean_ui()
+    def _on_metadata_changed(self):
+        self.update_current_context_info()
+        self._populate_ui(self._current_context_info())
+
+    def _to_seralisable_path(self, path):
+        return pathlib.PurePath(os.path.relpath(path, self._location)).as_posix() if path else ""
 
     def _on_banner_changed(self, current_text):
-        if self._current_context_info:
-            self._current_context_info._banner = os.path.relpath(current_text, self._location)
+        self._current_context_info().update({
+            "banner": self._to_seralisable_path(current_text)
+        })
 
     def update_current_context_info(self):
-        self._current_context_info._context_heading = self._ui.lineEditSummaryHeading.text()
-        self._current_context_info._context_description = self._ui.plainTextEditSummaryDescription.toPlainText()
         samples = []
         samples_tab_bar = self._ui.tabWidgetSamples.tabBar()
         for i in range(self._ui.tabWidgetSamples.count()):
@@ -183,8 +209,13 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
             header = views_tab_bar.tabText(i)
             views.append(v.as_dict(header))
 
-        self._current_context_info._views = views
-        self._current_context_info._samples = samples
+        self._current_context_info().update({
+            "banner": self._to_seralisable_path(self._ui.comboBoxBanner.currentText()),
+            "context_heading": self._ui.lineEditSummaryHeading.text(),
+            "context_description": self._ui.plainTextEditSummaryDescription.toPlainText(),
+            "views": views,
+            "samples": samples,
+        })
 
     def _update_view_annotations(self):
         for index in range(self._ui.tabWidgetViews.count()):
