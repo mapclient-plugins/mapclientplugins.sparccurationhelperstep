@@ -68,6 +68,23 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
                         print('Warning: Could not match version 0.1.0 context information file to a scaffold metadata file, ignoring.')
                     else:
                         context_info = ContextInfoAnnotation(self.to_serialisable_path(metadata_file), context_file)
+                        if 'banner' in json_data:
+                            json_data['banner'] = pathlib.PureWindowsPath(json_data['banner']).as_posix()
+
+                        modified_views = []
+                        for v in json_data['views']:
+                            v['path'] = pathlib.PureWindowsPath(v['path']).as_posix()
+                            v['thumbnail'] = pathlib.PureWindowsPath(v['thumbnail']).as_posix()
+                            modified_views.append(v)
+
+                        json_data['views'] = modified_views
+
+                        modified_samples = []
+                        for s in json_data['samples']:
+                            s['path'] = pathlib.PureWindowsPath(s['path']).as_posix()
+                            modified_samples.append(s)
+
+                        json_data['samples'] = modified_samples
                         context_info.update(json_data)
                         self._context_info_list.append(context_info)
                 elif Version(json_data['version']) >= Version("0.2.0"):
@@ -187,7 +204,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._populate_ui(self._current_context_info())
 
     def to_serialisable_path(self, path):
-        return pathlib.PurePath(os.path.relpath(path, self._location)).as_posix() if path else ""
+        return pathlib.PureWindowsPath(os.path.relpath(path, self._location)).as_posix() if path else ""
 
     def _on_banner_changed(self, current_text):
         self._current_context_info().update({
