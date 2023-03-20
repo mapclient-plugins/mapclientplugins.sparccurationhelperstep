@@ -87,9 +87,8 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         indexes = self._ui.treeViewScaffoldAnnotations.selectedIndexes()
         if len(indexes) == 1:
             selection = indexes[0]
-            thumbnail_file = self._scaffold_annotations_model_tree.data(selection, QtCore.Qt.DisplayRole)
-            thumbnail_filepath = ManifestDataFrame().get_filepath_on_disk(thumbnail_file)
-            pixmap = QtGui.QPixmap(thumbnail_filepath)
+            thumbnail_file = self._scaffold_annotations_model_tree.data(selection, QtCore.Qt.UserRole)
+            pixmap = QtGui.QPixmap(thumbnail_file)
             pixmap = pixmap.scaled(256, 256, QtCore.Qt.KeepAspectRatio)
             self._ui.labelThumbnailPreview.setPixmap(pixmap)
         else:
