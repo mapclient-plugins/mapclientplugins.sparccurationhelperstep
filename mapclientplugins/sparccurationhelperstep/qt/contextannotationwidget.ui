@@ -36,6 +36,27 @@
     </layout>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayoutContextMetadata">
+     <item>
+      <widget class="QLabel" name="labelContextMetadata">
+       <property name="text">
+        <string>Matadata file for context:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBoxContextMetadata">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
@@ -59,13 +80,30 @@
         <widget class="QLineEdit" name="lineEditSummaryHeading"/>
        </item>
        <item row="1" column="0">
+        <widget class="QLabel" name="labelSummaryBanner">
+         <property name="text">
+          <string>Banner:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="comboBoxBanner">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
         <widget class="QLabel" name="labelSummaryDescription">
          <property name="text">
           <string>Description:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="2" column="1">
         <widget class="QPlainTextEdit" name="plainTextEditSummaryDescription"/>
        </item>
       </layout>
