@@ -78,5 +78,4 @@ class SamplesWidget(QtWidgets.QWidget):
         file_name = result[0]
         if file_name:
             self._parent.set_previous_location(os.path.dirname(file_name))
-            relative_path = relative_to_dataset_dir(file_name)
-            self._ui.lineEditPath.setText(relative_path)
+            self._ui.lineEditPath.setText(self._parent.to_serialisable_path(file_name))

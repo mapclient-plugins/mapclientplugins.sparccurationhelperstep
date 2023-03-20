@@ -67,11 +67,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
                     if metadata_file is None:
                         print('Warning: Could not match version 0.1.0 context information file to a scaffold metadata file, ignoring.')
                     else:
-                        context_info = ContextInfoAnnotation(self._to_seralisable_path(metadata_file), context_file)
+                        context_info = ContextInfoAnnotation(self.to_serialisable_path(metadata_file), context_file)
                         context_info.update(json_data)
                         self._context_info_list.append(context_info)
                 elif Version(json_data['version']) >= Version("0.2.0"):
-                    context_info = ContextInfoAnnotation(self._to_seralisable_path(json_data['metadata']), context_file)
+                    context_info = ContextInfoAnnotation(self.to_serialisable_path(json_data['metadata']), context_file)
                     context_info.from_dict(json_data)
                     self._context_info_list.append(context_info)
 
@@ -81,7 +81,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
             metadata_dir = os.path.dirname(metadata_file)
             context_info_filename = metadata_filename.split(".")[0]+"_context_info.json"
             metadata_file_path = os.path.join(metadata_dir, metadata_filename)
-            metadata_path = self._to_seralisable_path(metadata_file_path)
+            metadata_path = self.to_serialisable_path(metadata_file_path)
             found = [ci.get_metadata_file() == metadata_path for ci in self._context_info_list]
             if not any(found):
                 self._context_info_list.append(ContextInfoAnnotation(metadata_path, context_info_filename))
@@ -186,12 +186,12 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self.update_current_context_info()
         self._populate_ui(self._current_context_info())
 
-    def _to_seralisable_path(self, path):
+    def to_serialisable_path(self, path):
         return pathlib.PurePath(os.path.relpath(path, self._location)).as_posix() if path else ""
 
     def _on_banner_changed(self, current_text):
         self._current_context_info().update({
-            "banner": self._to_seralisable_path(current_text)
+            "banner": self.to_serialisable_path(current_text)
         })
 
     def update_current_context_info(self):
@@ -210,7 +210,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
             views.append(v.as_dict(header))
 
         self._current_context_info().update({
-            "banner": self._to_seralisable_path(self._ui.comboBoxBanner.currentText()),
+            "banner": self.to_serialisable_path(self._ui.comboBoxBanner.currentText()),
             "context_heading": self._ui.lineEditSummaryHeading.text(),
             "context_description": self._ui.plainTextEditSummaryDescription.toPlainText(),
             "views": views,

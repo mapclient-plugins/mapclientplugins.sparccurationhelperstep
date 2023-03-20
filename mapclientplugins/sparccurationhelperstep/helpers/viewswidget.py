@@ -103,5 +103,4 @@ class ViewsWidget(QtWidgets.QWidget):
         file_name = result[0]
         if file_name:
             self._parent.set_previous_location(os.path.dirname(file_name))
-            relative_path = os.path.relpath(file_name, self._location)
-            line_editor.setText(relative_path)
+            line_editor.setText(self._parent.to_serialisable_path(file_name))
