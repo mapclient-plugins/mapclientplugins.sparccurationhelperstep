@@ -32,6 +32,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonFixError.clicked.connect(self._fix_error_button_clicked)
         self._ui.pushButtonFixAllErrors.clicked.connect(self._fix_all_errors_button_clicked)
         self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
+        self._ui.comboBoxSAnnotationPredicate.currentTextChanged.connect(self._annotation_predicate_changed)
         self._ui.listViewErrors.model()
         # self._ui.treeViewScaffoldAnnotations.clicked.connect(self._scaffold_annotation_clicked)
 
@@ -114,6 +115,9 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
         return success
 
+    def _annotation_predicate_changed(self):
+        self._ui.checkBoxAnnotationMode.setEnabled(self._ui.comboBoxSAnnotationPredicate.currentText() == SOURCE_OF_COLUMN)
+
     def _apply_button_clicked(self):
         subject_text = self._ui.comboBoxAnnotationSubject.currentText()
         object_text = self._ui.comboBoxAnnotationObject.currentText()
@@ -129,7 +133,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
         append = False
         if object_value and predicate_text == SOURCE_OF_COLUMN:
-            append = True
+            append = self._ui.checkBoxAnnotationMode.isChecked()
 
         self._manifest_dataframe.update_column_content(subject_text, predicate_text, object_value, append)
         self._reset_dataframe()

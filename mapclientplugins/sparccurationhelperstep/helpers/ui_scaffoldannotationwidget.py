@@ -75,6 +75,11 @@ class Ui_ScaffoldAnnotationWidget(object):
 
         self.horizontalLayout_3.addWidget(self.comboBoxSAnnotationPredicate)
 
+        self.checkBoxAnnotationMode = QCheckBox(self.groupBox)
+        self.checkBoxAnnotationMode.setObjectName(u"checkBoxAnnotationMode")
+
+        self.horizontalLayout_3.addWidget(self.checkBoxAnnotationMode)
+
         self.comboBoxAnnotationObject = QComboBox(self.groupBox)
         self.comboBoxAnnotationObject.setObjectName(u"comboBoxAnnotationObject")
 
@@ -146,6 +151,10 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.thumbnail_preview_label.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Thumbnail preview:", None))
         self.labelThumbnailPreview.setText("")
         self.groupBox.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Manual annotation:", None))
+#if QT_CONFIG(tooltip)
+        self.checkBoxAnnotationMode.setToolTip(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Append or replace entry", None))
+#endif // QT_CONFIG(tooltip)
+        self.checkBoxAnnotationMode.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Append", None))
         self.pushButtonApply.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Apply", None))
         self.groupBoxErrors.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Errors:", None))
         self.pushButtonFixAllErrors.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Fix All Errors", None))
