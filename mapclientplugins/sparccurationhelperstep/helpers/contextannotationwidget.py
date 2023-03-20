@@ -273,7 +273,6 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def _create_view(self, header):
         view = ViewsWidget(self._scaffold_annotations, self)
-        view.set_location(self._location)
         view.sample_changed.connect(self._view_sample_changed)
         self._ui.tabWidgetViews.addTab(view, header)
         self._ui.tabWidgetViews.setCurrentWidget(view)

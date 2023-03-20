@@ -16,7 +16,6 @@ class ViewsWidget(QtWidgets.QWidget):
         self._ui.setupUi(self)
 
         self._parent = parent
-        self._location = None
 
         if annotations is not None:
             self.add_annotations(annotations)
@@ -28,9 +27,6 @@ class ViewsWidget(QtWidgets.QWidget):
 
         for sample in samples:
             m.appendRow(QtGui.QStandardItem(sample))
-
-    def set_location(self, location):
-        self._location = location
 
     def _make_connections(self):
         self._ui.pushButtonThumbnailFile.clicked.connect(self._open_thumbnail_file)
