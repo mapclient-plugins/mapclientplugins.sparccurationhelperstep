@@ -1,8 +1,12 @@
 import csv
 import json
 import os.path
+import pathlib
 
-from PySide6 import QtCore, QtWidgets
+from packaging.version import Version
+
+from PySide6 import QtCore, QtGui, QtWidgets
+
 from sparc.curation.tools.utilities import convert_to_bytes
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_contextannotationwidget import Ui_ContextAnnotationWidget
@@ -10,7 +14,8 @@ from mapclientplugins.sparccurationhelperstep.helpers.sampleswidget import Sampl
 from mapclientplugins.sparccurationhelperstep.helpers.viewswidget import ViewsWidget
 
 import sparc.curation.tools.context_annotations as context_annotations
-from sparc.curation.tools.ondisk import is_annotation_csv_file
+from sparc.curation.tools.contextinfo import ContextInfoAnnotation
+from sparc.curation.tools.ondisk import is_annotation_csv_file, OnDiskFiles
 
 
 class ContextAnnotationWidget(QtWidgets.QWidget):
@@ -24,25 +29,90 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         self._previous_location = QtCore.QDir.homePath()
         self._scaffold_annotations = None
+        self._context_info_list = []
+        self._current_index = -1
 
         self._make_connections()
 
     def update_info(self, location):
         self._location = location
+        metadata_files = OnDiskFiles().get_scaffold_data().get_metadata_files()
+        metadata_list = [*metadata_files]
 
-        # Find context data.
+        metadata_list_model = _build_list_model(metadata_list)
+        self._ui.comboBoxContextMetadata.blockSignals(True)
+        self._ui.comboBoxContextMetadata.setModel(metadata_list_model)
+        self._current_index = 0
+        self._ui.comboBoxContextMetadata.blockSignals(False)
+
+        potential_thumbnails = list(pathlib.Path(self._location).rglob("*.png"))
+        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpeg"))
+        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpg"))
+        thumbnail_files = list(set(potential_thumbnails))
+
+        thumbnail_list_model = _build_list_model(thumbnail_files)
+
         context_files = context_annotations.search_for_context_data_files(location, convert_to_bytes("2MiB"))
-        if len(context_files) == 0:
-            pass
-        elif len(context_files) == 1:
-            context_file = context_files[0]
+        # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
+        for context_file in context_files:
             with open(context_file, encoding='utf-8') as f:
                 json_data = json.load(f)
+                if Version(json_data['version']) == Version("0.1.0"):
+                    # Associate this context information file with a metadata file in the same directory.
+                    # Or, with any other single context information file.  Otherwise, report warning.
+                    context_dir = os.path.dirname(context_file)
+                    matching = [m for m in metadata_files if os.path.dirname(m) == context_dir]
+                    metadata_file = None
+                    if len(matching) == 1:
+                        metadata_file = matching[0]
+                    else:
+                        if len(metadata_files) == 1:
+                            metadata_file = metadata_files[0]
 
-            self._populate_ui(json_data)
+                    if metadata_file is None:
+                        print('Warning: Could not match version 0.1.0 context information file to a scaffold metadata file, ignoring.')
+                    else:
+                        context_info = ContextInfoAnnotation(self.to_serialisable_path(metadata_file), context_file)
+                        if 'banner' in json_data:
+                            json_data['banner'] = pathlib.PureWindowsPath(json_data['banner']).as_posix()
 
-        else:
-            raise NotImplementedError("Handling of multiple context files is not implemented.")
+                        modified_views = []
+                        for v in json_data['views']:
+                            v['path'] = pathlib.PureWindowsPath(v['path']).as_posix()
+                            v['thumbnail'] = pathlib.PureWindowsPath(v['thumbnail']).as_posix()
+                            modified_views.append(v)
+
+                        json_data['views'] = modified_views
+
+                        modified_samples = []
+                        for s in json_data['samples']:
+                            s['path'] = pathlib.PureWindowsPath(s['path']).as_posix()
+                            modified_samples.append(s)
+
+                        json_data['samples'] = modified_samples
+                        context_info.update(json_data)
+                        self._context_info_list.append(context_info)
+                elif Version(json_data['version']) >= Version("0.2.0"):
+                    context_info = ContextInfoAnnotation(self.to_serialisable_path(json_data['metadata']), context_file)
+                    context_info.from_dict(json_data)
+                    self._context_info_list.append(context_info)
+
+        # Initial context data for metadata files without an associated existing context info file.
+        for metadata_file in metadata_files:
+            metadata_filename = os.path.basename(metadata_file)
+            metadata_dir = os.path.dirname(metadata_file)
+            context_info_filename = metadata_filename.split(".")[0]+"_context_info.json"
+            metadata_file_path = os.path.join(metadata_dir, metadata_filename)
+            metadata_path = self.to_serialisable_path(metadata_file_path)
+            found = [ci.get_metadata_file() == metadata_path for ci in self._context_info_list]
+            if not any(found):
+                self._context_info_list.append(ContextInfoAnnotation(metadata_path, context_info_filename))
+
+        # Basis of the interface relies on the context info list being the same size as the metadata files list.
+        assert len(self._context_info_list) == len(metadata_files)
+
+        self._ui.comboBoxBanner.setModel(thumbnail_list_model)
+        self._populate_ui(self._context_info_list[self._current_index])
 
         # Find annotation file.
         annotation_files = context_annotations.search_for_annotation_csv_files(location, convert_to_bytes("2MiB"))
@@ -54,13 +124,20 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
     def set_previous_location(self, previous_location):
         self._previous_location = previous_location
 
+    def clean_ui(self):
+        self._ui.lineEditSummaryHeading.setText("")
+        self._ui.plainTextEditSummaryDescription.setPlainText("")
+        self._ui.tabWidgetViews.clear()
+        self._ui.tabWidgetSamples.clear()
+
     def _populate_ui(self, data):
-        self._ui.lineEditSummaryHeading.setText(data["heading"])
-        self._ui.plainTextEditSummaryDescription.setPlainText(data["description"])
-        for view in data["views"]:
+        self.clean_ui()
+        self._ui.lineEditSummaryHeading.setText(data.get_heading())
+        self._ui.plainTextEditSummaryDescription.setPlainText(data.get_description())
+        for view in data.get_views():
             self._create_view(view["id"])
 
-        for sample in data["samples"]:
+        for sample in data.get_samples():
             self._create_sample(sample["id"])
             self._add_sample_to_views(sample["id"])
 
@@ -68,11 +145,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         for view_header in view_headers:
             self._add_view_to_samples(view_header)
 
-        for i, view in enumerate(data["views"]):
+        for i, view in enumerate(data.get_views()):
             v = self._ui.tabWidgetViews.widget(i)
             v.from_dict(view)
 
-        for i, sample in enumerate(data["samples"]):
+        for i, sample in enumerate(data.get_samples()):
             s = self._ui.tabWidgetSamples.widget(i)
             s.from_dict(sample)
 
@@ -82,62 +159,13 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonViewsAdd.clicked.connect(self._views_add_clicked)
         self._ui.tabWidgetSamples.tabCloseRequested.connect(self._sample_tab_close_requested)
         self._ui.tabWidgetViews.tabCloseRequested.connect(self._view_tab_close_requested)
+        self._ui.comboBoxContextMetadata.currentTextChanged.connect(self._on_metadata_changed)
+        self._ui.comboBoxBanner.currentTextChanged.connect(self._on_banner_changed)
 
     def write_context_annotation(self):
-        context_heading = self._ui.lineEditSummaryHeading.text()
-        context_description = self._ui.plainTextEditSummaryDescription.toPlainText()
-
-        data = {
-            "version": "0.1.0",
-            "id": "sparc.science.context_data",
-            "heading": context_heading,
-            "description": context_description,
-            "samples": [],
-            "views": [],
-        }
-
-        samples = []
-        samples_tab_bar = self._ui.tabWidgetSamples.tabBar()
-        for i in range(self._ui.tabWidgetSamples.count()):
-            s = self._ui.tabWidgetSamples.widget(i)
-            header = samples_tab_bar.tabText(i)
-            samples.append(s.as_dict(header))
-
-        views = []
-        views_tab_bar = self._ui.tabWidgetViews.tabBar()
-        for i in range(self._ui.tabWidgetViews.count()):
-            v = self._ui.tabWidgetViews.widget(i)
-            header = views_tab_bar.tabText(i)
-            views.append(v.as_dict(header))
-
-        data["views"] = views
-        data["samples"] = samples
-        
-        context_info_location = context_annotations.get_context_info_file()
-        context_annotations.write_context_info(context_info_location, data)
-
-        annotation_data = {
-            "version": "0.2.0",
-            "id": "sparc.science.annotation_data",
-        }
-
-        def _add_entry(_annotation_data, annotation, value):
-            if annotation and annotation != "--":
-                if annotation in _annotation_data:
-                    _annotation_data[annotation].append(value)
-                else:
-                    _annotation_data[annotation] = [value]
-
-        for v in views:
-            _add_entry(annotation_data, v["annotation"], v["id"])
-            if v["annotation"] != "--":
-                context_annotations.update_anatomical_entity(os.path.join(self._location, v["path"]), v["annotation"])
-
-        for s in samples:
-            _add_entry(annotation_data, s["annotation"], s["id"])
-
-        context_annotations.update_additional_type(context_info_location)
-        context_annotations.update_supplemental_json(context_info_location, json.dumps(annotation_data))
+        self.update_current_context_info()
+        for context_info in self._context_info_list:
+            context_annotations.update_context_info(context_info)
 
     def _open_annotation_map_file(self):
         _is_annotation_csv_file = False
@@ -172,6 +200,44 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         self._scaffold_annotations = scaffold_annotations
         self._update_view_annotations()
+
+    def _on_metadata_changed(self):
+        # Apply any changes to the current context information.
+        self.update_current_context_info()
+        # Load the new context information.
+        self._current_index = self._ui.comboBoxContextMetadata.currentIndex()
+        self._populate_ui(self._context_info_list[self._current_index])
+
+    def to_serialisable_path(self, path):
+        return pathlib.PureWindowsPath(os.path.relpath(path, self._location)).as_posix() if path else ""
+
+    def _on_banner_changed(self, current_text):
+        self._context_info_list[self._current_index].update({
+            "banner": self.to_serialisable_path(current_text)
+        })
+
+    def update_current_context_info(self):
+        samples = []
+        samples_tab_bar = self._ui.tabWidgetSamples.tabBar()
+        for i in range(self._ui.tabWidgetSamples.count()):
+            s = self._ui.tabWidgetSamples.widget(i)
+            header = samples_tab_bar.tabText(i)
+            samples.append(s.as_dict(header))
+
+        views = []
+        views_tab_bar = self._ui.tabWidgetViews.tabBar()
+        for i in range(self._ui.tabWidgetViews.count()):
+            v = self._ui.tabWidgetViews.widget(i)
+            header = views_tab_bar.tabText(i)
+            views.append(v.as_dict(header))
+
+        self._context_info_list[self._current_index].update({
+            "banner": self.to_serialisable_path(self._ui.comboBoxBanner.currentText()),
+            "context_heading": self._ui.lineEditSummaryHeading.text(),
+            "context_description": self._ui.plainTextEditSummaryDescription.toPlainText(),
+            "views": views,
+            "samples": samples,
+        })
 
     def _update_view_annotations(self):
         for index in range(self._ui.tabWidgetViews.count()):
@@ -229,7 +295,6 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def _create_view(self, header):
         view = ViewsWidget(self._scaffold_annotations, self)
-        view.set_location(self._location)
         view.sample_changed.connect(self._view_sample_changed)
         self._ui.tabWidgetViews.addTab(view, header)
         self._ui.tabWidgetViews.setCurrentWidget(view)
@@ -277,3 +342,13 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         tab_bar = self._ui.tabWidgetViews.tabBar()
         count = tab_bar.count()
         return [tab_bar.tabText(i) for i in range(count)]
+
+
+def _build_list_model(annotation_items):
+    model = QtGui.QStandardItemModel()
+    for i in annotation_items:
+        item = QtGui.QStandardItem(str(i))
+        item.setData(i, QtCore.Qt.UserRole)
+        item.setEditable(False)
+        model.appendRow(item)
+    return model

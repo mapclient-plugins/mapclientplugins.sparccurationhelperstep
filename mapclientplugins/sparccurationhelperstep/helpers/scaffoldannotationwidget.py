@@ -6,7 +6,6 @@ from sparc.curation.tools.errors import ScaffoldAnnotationError, AnnotationDirec
 
 from sparc.curation.tools.manifests import ManifestDataFrame
 from sparc.curation.tools.ondisk import OnDiskFiles
-from sparc.curation.tools.utilities import convert_to_bytes
 from sparc.curation.tools.scaffold_annotations import get_errors, fix_error, get_confirmation_message
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_scaffoldannotationwidget import Ui_ScaffoldAnnotationWidget
@@ -32,14 +31,12 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonFixError.clicked.connect(self._fix_error_button_clicked)
         self._ui.pushButtonFixAllErrors.clicked.connect(self._fix_all_errors_button_clicked)
         self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
+        self._ui.comboBoxSAnnotationPredicate.currentTextChanged.connect(self._annotation_predicate_changed)
         self._ui.listViewErrors.model()
         # self._ui.treeViewScaffoldAnnotations.clicked.connect(self._scaffold_annotation_clicked)
 
     def update_annotations(self, location):
-        max_size = convert_to_bytes('3MiB')
-
         self._location = location
-        OnDiskFiles().setup_dataset(location, max_size)
         metadata_files = OnDiskFiles().get_scaffold_data().get_metadata_files()
         view_files = OnDiskFiles().get_scaffold_data().get_view_files()
         thumbnail_files = OnDiskFiles().get_scaffold_data().get_thumbnail_files()
@@ -87,9 +84,8 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         indexes = self._ui.treeViewScaffoldAnnotations.selectedIndexes()
         if len(indexes) == 1:
             selection = indexes[0]
-            thumbnail_file = self._scaffold_annotations_model_tree.data(selection, QtCore.Qt.DisplayRole)
-            thumbnail_filepath = ManifestDataFrame().get_filepath_on_disk(thumbnail_file)
-            pixmap = QtGui.QPixmap(thumbnail_filepath)
+            thumbnail_file = self._scaffold_annotations_model_tree.data(selection, QtCore.Qt.UserRole)
+            pixmap = QtGui.QPixmap(thumbnail_file)
             pixmap = pixmap.scaled(256, 256, QtCore.Qt.KeepAspectRatio)
             self._ui.labelThumbnailPreview.setPixmap(pixmap)
         else:
@@ -115,6 +111,9 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
         return success
 
+    def _annotation_predicate_changed(self):
+        self._ui.checkBoxAnnotationMode.setEnabled(self._ui.comboBoxSAnnotationPredicate.currentText() == SOURCE_OF_COLUMN)
+
     def _apply_button_clicked(self):
         subject_text = self._ui.comboBoxAnnotationSubject.currentText()
         object_text = self._ui.comboBoxAnnotationObject.currentText()
@@ -130,7 +129,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
         append = False
         if object_value and predicate_text == SOURCE_OF_COLUMN:
-            append = True
+            append = self._ui.checkBoxAnnotationMode.isChecked()
 
         self._manifest_dataframe.update_column_content(subject_text, predicate_text, object_value, append)
         self._reset_dataframe()
