@@ -29,6 +29,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._previous_location = QtCore.QDir.homePath()
         self._scaffold_annotations = None
         self._context_info_list = []
+        self._current_index = -1
 
         self._make_connections()
 
@@ -40,12 +41,15 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         metadata_list_model = _build_list_model(metadata_list)
         self._ui.comboBoxContextMetadata.blockSignals(True)
         self._ui.comboBoxContextMetadata.setModel(metadata_list_model)
+        self._current_index = 0
         self._ui.comboBoxContextMetadata.blockSignals(False)
 
-        thumbnail_files = OnDiskFiles().get_scaffold_data().get_thumbnail_files()
-        thumbnail_list = [*thumbnail_files]
+        potential_thumbnails = list(pathlib.Path(self._location).rglob("*.png"))
+        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpeg"))
+        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpg"))
+        thumbnail_files = list(set(potential_thumbnails))
 
-        thumbnail_list_model = _build_list_model(thumbnail_list)
+        thumbnail_list_model = _build_list_model(thumbnail_files)
 
         context_files = context_annotations.search_for_context_data_files(location, convert_to_bytes("2MiB"))
         # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
@@ -107,14 +111,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         assert len(self._context_info_list) == len(metadata_files)
 
         self._ui.comboBoxBanner.setModel(thumbnail_list_model)
-        self._populate_ui(self._current_context_info())
+        self._populate_ui(self._context_info_list[self._current_index])
 
         # Find annotation file.
         annotation_files = context_annotations.search_for_annotation_csv_files(location, convert_to_bytes("2MiB"))
         self._load_view_annotations(annotation_files)
-
-    def _current_context_info(self):
-        return self._context_info_list[self._ui.comboBoxContextMetadata.currentIndex()]
 
     def previous_location(self):
         return self._previous_location
@@ -200,14 +201,17 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._update_view_annotations()
 
     def _on_metadata_changed(self):
+        # Apply any changes to the current context information.
         self.update_current_context_info()
-        self._populate_ui(self._current_context_info())
+        # Load the new context information.
+        self._current_index = self._ui.comboBoxContextMetadata.currentIndex()
+        self._populate_ui(self._context_info_list[self._current_index])
 
     def to_serialisable_path(self, path):
         return pathlib.PureWindowsPath(os.path.relpath(path, self._location)).as_posix() if path else ""
 
     def _on_banner_changed(self, current_text):
-        self._current_context_info().update({
+        self._context_info_list[self._current_index].update({
             "banner": self.to_serialisable_path(current_text)
         })
 
@@ -226,7 +230,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
             header = views_tab_bar.tabText(i)
             views.append(v.as_dict(header))
 
-        self._current_context_info().update({
+        self._context_info_list[self._current_index].update({
             "banner": self.to_serialisable_path(self._ui.comboBoxBanner.currentText()),
             "context_heading": self._ui.lineEditSummaryHeading.text(),
             "context_description": self._ui.plainTextEditSummaryDescription.toPlainText(),
