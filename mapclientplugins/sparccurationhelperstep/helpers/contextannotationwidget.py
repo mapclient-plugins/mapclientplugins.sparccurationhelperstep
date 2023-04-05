@@ -99,11 +99,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         # Initial context data for metadata files without an associated existing context info file.
         for metadata_file in metadata_files:
-            metadata_filename = os.path.basename(metadata_file)
-            metadata_dir = os.path.dirname(metadata_file)
-            context_info_filename = metadata_filename.split(".")[0]+"_context_info.json"
-            metadata_file_path = os.path.join(metadata_dir, metadata_filename)
-            metadata_path = self.to_serialisable_path(metadata_file_path)
+            context_info_filename = metadata_file.rsplit(".", 1)[0] + "_context_info.json"
+            metadata_path = self.to_serialisable_path(metadata_file)
             found = [ci.get_metadata_file() == metadata_path for ci in self._context_info_list]
             if not any(found):
                 self._context_info_list.append(ContextInfoAnnotation(metadata_path, context_info_filename))
@@ -233,8 +230,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         self._context_info_list[self._current_index].update({
             "banner": self.to_serialisable_path(self._ui.comboBoxBanner.currentText()),
-            "context_heading": self._ui.lineEditSummaryHeading.text(),
-            "context_description": self._ui.plainTextEditSummaryDescription.toPlainText(),
+            "heading": self._ui.lineEditSummaryHeading.text(),
+            "description": self._ui.plainTextEditSummaryDescription.toPlainText(),
             "views": views,
             "samples": samples,
         })
