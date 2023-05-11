@@ -3,19 +3,24 @@
 ################################################################################
 ## Form generated from reading UI file 'sparccurationhelperwidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.4.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QPushButton, QSizePolicy,
+    QSpacerItem, QTabWidget, QVBoxLayout, QWidget)
 
 from mapclientplugins.sparccurationhelperstep.helpers.contextannotationwidget import ContextAnnotationWidget
 from mapclientplugins.sparccurationhelperstep.helpers.scaffoldannotationwidget import ScaffoldAnnotationWidget
 from mapclientplugins.sparccurationhelperstep.helpers.plotannotationwidget import PlotAnnotationWidget
-
 
 class Ui_SparcCurationHelperWidget(object):
     def setupUi(self, SparcCurationHelperWidget):
@@ -44,6 +49,11 @@ class Ui_SparcCurationHelperWidget(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.pushButtonDocumentation = QPushButton(SparcCurationHelperWidget)
+        self.pushButtonDocumentation.setObjectName(u"pushButtonDocumentation")
+
+        self.horizontalLayout.addWidget(self.pushButtonDocumentation)
+
         self.pushButtonDone = QPushButton(SparcCurationHelperWidget)
         self.pushButtonDone.setObjectName(u"pushButtonDone")
 
@@ -66,6 +76,7 @@ class Ui_SparcCurationHelperWidget(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabScaffoldAnnotation), QCoreApplication.translate("SparcCurationHelperWidget", u"Scaffold Annotation", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPlotAnnotation), QCoreApplication.translate("SparcCurationHelperWidget", u"Plot Annotation", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabContextAnnotation), QCoreApplication.translate("SparcCurationHelperWidget", u"Context Annotation", None))
+        self.pushButtonDocumentation.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Online Documentation", None))
         self.pushButtonDone.setText(QCoreApplication.translate("SparcCurationHelperWidget", u"Done", None))
     # retranslateUi
 

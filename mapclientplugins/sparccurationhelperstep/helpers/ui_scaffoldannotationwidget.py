@@ -3,15 +3,22 @@
 ################################################################################
 ## Form generated from reading UI file 'scaffoldannotationwidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.4.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
+    QHBoxLayout, QHeaderView, QLabel, QListView,
+    QPushButton, QSizePolicy, QSpacerItem, QTreeView,
+    QVBoxLayout, QWidget)
 
 class Ui_ScaffoldAnnotationWidget(object):
     def setupUi(self, ScaffoldAnnotationWidget):
@@ -74,6 +81,11 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.comboBoxSAnnotationPredicate.setObjectName(u"comboBoxSAnnotationPredicate")
 
         self.horizontalLayout_3.addWidget(self.comboBoxSAnnotationPredicate)
+
+        self.checkBoxAnnotationMode = QCheckBox(self.groupBox)
+        self.checkBoxAnnotationMode.setObjectName(u"checkBoxAnnotationMode")
+
+        self.horizontalLayout_3.addWidget(self.checkBoxAnnotationMode)
 
         self.comboBoxAnnotationObject = QComboBox(self.groupBox)
         self.comboBoxAnnotationObject.setObjectName(u"comboBoxAnnotationObject")
@@ -146,6 +158,10 @@ class Ui_ScaffoldAnnotationWidget(object):
         self.thumbnail_preview_label.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Thumbnail preview:", None))
         self.labelThumbnailPreview.setText("")
         self.groupBox.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Manual annotation:", None))
+#if QT_CONFIG(tooltip)
+        self.checkBoxAnnotationMode.setToolTip(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Append or replace entry", None))
+#endif // QT_CONFIG(tooltip)
+        self.checkBoxAnnotationMode.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Append", None))
         self.pushButtonApply.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Apply", None))
         self.groupBoxErrors.setTitle(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Errors:", None))
         self.pushButtonFixAllErrors.setText(QCoreApplication.translate("ScaffoldAnnotationWidget", u"Fix All Errors", None))

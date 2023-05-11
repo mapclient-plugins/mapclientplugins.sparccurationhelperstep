@@ -1,6 +1,6 @@
 import os.path
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_viewswidget import Ui_ViewsWidget
 
@@ -16,7 +16,6 @@ class ViewsWidget(QtWidgets.QWidget):
         self._ui.setupUi(self)
 
         self._parent = parent
-        self._location = None
 
         if annotations is not None:
             self.add_annotations(annotations)
@@ -28,9 +27,6 @@ class ViewsWidget(QtWidgets.QWidget):
 
         for sample in samples:
             m.appendRow(QtGui.QStandardItem(sample))
-
-    def set_location(self, location):
-        self._location = location
 
     def _make_connections(self):
         self._ui.pushButtonThumbnailFile.clicked.connect(self._open_thumbnail_file)
@@ -103,5 +99,4 @@ class ViewsWidget(QtWidgets.QWidget):
         file_name = result[0]
         if file_name:
             self._parent.set_previous_location(os.path.dirname(file_name))
-            relative_path = os.path.relpath(file_name, self._location)
-            line_editor.setText(relative_path)
+            line_editor.setText(self._parent.to_serialisable_path(file_name))
