@@ -3,15 +3,22 @@
 ################################################################################
 ## Form generated from reading UI file 'plotannotationwidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.5.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
+    QHBoxLayout, QHeaderView, QLabel, QLayout,
+    QListView, QPushButton, QSizePolicy, QSpacerItem,
+    QTreeView, QVBoxLayout, QWidget)
 
 class Ui_PlotAnnotationWidget(object):
     def setupUi(self, PlotAnnotationWidget):
@@ -92,47 +99,73 @@ class Ui_PlotAnnotationWidget(object):
 
         self.verticalLayout.addWidget(self.groupBox)
 
-        self.groupBoxErrors = QGroupBox(PlotAnnotationWidget)
-        self.groupBoxErrors.setObjectName(u"groupBoxErrors")
-        self.groupBoxErrors.setLayoutDirection(Qt.LeftToRight)
-        self.gridLayout2 = QGridLayout(self.groupBoxErrors)
+        self.groupBoxPlots = QGroupBox(PlotAnnotationWidget)
+        self.groupBoxPlots.setObjectName(u"groupBoxPlots")
+        self.groupBoxPlots.setLayoutDirection(Qt.LeftToRight)
+        self.gridLayout2 = QGridLayout(self.groupBoxPlots)
         self.gridLayout2.setObjectName(u"gridLayout2")
+        self.listViewPlots = QListView(self.groupBoxPlots)
+        self.listViewPlots.setObjectName(u"listViewPlots")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy2.setHorizontalStretch(3)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.listViewPlots.sizePolicy().hasHeightForWidth())
+        self.listViewPlots.setSizePolicy(sizePolicy2)
+
+        self.gridLayout2.addWidget(self.listViewPlots, 0, 5, 1, 1)
+
         self.gridLayoutButtons = QGridLayout()
         self.gridLayoutButtons.setObjectName(u"gridLayoutButtons")
-        self.pushButtonFixAllErrors = QPushButton(self.groupBoxErrors)
-        self.pushButtonFixAllErrors.setObjectName(u"pushButtonFixAllErrors")
+        self.pushButtonAnnotatePlots = QPushButton(self.groupBoxPlots)
+        self.pushButtonAnnotatePlots.setObjectName(u"pushButtonAnnotatePlots")
 
-        self.gridLayoutButtons.addWidget(self.pushButtonFixAllErrors, 1, 1, 1, 1)
+        self.gridLayoutButtons.addWidget(self.pushButtonAnnotatePlots, 1, 1, 1, 1)
 
-        self.pushButtonFixError = QPushButton(self.groupBoxErrors)
-        self.pushButtonFixError.setObjectName(u"pushButtonFixError")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.pushButtonFixError.sizePolicy().hasHeightForWidth())
-        self.pushButtonFixError.setSizePolicy(sizePolicy2)
+        self.pushButtonGenerateThumbnail = QPushButton(self.groupBoxPlots)
+        self.pushButtonGenerateThumbnail.setObjectName(u"pushButtonGenerateThumbnail")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.pushButtonGenerateThumbnail.sizePolicy().hasHeightForWidth())
+        self.pushButtonGenerateThumbnail.setSizePolicy(sizePolicy3)
 
-        self.gridLayoutButtons.addWidget(self.pushButtonFixError, 0, 1, 1, 1)
+        self.gridLayoutButtons.addWidget(self.pushButtonGenerateThumbnail, 0, 1, 1, 1)
 
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.gridLayoutButtons.addItem(self.horizontalSpacer_2, 0, 0, 1, 1)
 
 
-        self.gridLayout2.addLayout(self.gridLayoutButtons, 0, 1, 1, 1)
+        self.gridLayout2.addLayout(self.gridLayoutButtons, 0, 6, 1, 1)
 
-        self.listViewErrors = QListView(self.groupBoxErrors)
-        self.listViewErrors.setObjectName(u"listViewErrors")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy3.setHorizontalStretch(1)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.listViewErrors.sizePolicy().hasHeightForWidth())
-        self.listViewErrors.setSizePolicy(sizePolicy3)
+        self.treeViewFileBrowser = QTreeView(self.groupBoxPlots)
+        self.treeViewFileBrowser.setObjectName(u"treeViewFileBrowser")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy4.setHorizontalStretch(4)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.treeViewFileBrowser.sizePolicy().hasHeightForWidth())
+        self.treeViewFileBrowser.setSizePolicy(sizePolicy4)
 
-        self.gridLayout2.addWidget(self.listViewErrors, 0, 0, 1, 1)
+        self.gridLayout2.addWidget(self.treeViewFileBrowser, 0, 0, 1, 1)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.pushButtonAddPlot = QPushButton(self.groupBoxPlots)
+        self.pushButtonAddPlot.setObjectName(u"pushButtonAddPlot")
+
+        self.gridLayout.addWidget(self.pushButtonAddPlot, 0, 0, 1, 1)
+
+        self.pushButtonRemovePlot = QPushButton(self.groupBoxPlots)
+        self.pushButtonRemovePlot.setObjectName(u"pushButtonRemovePlot")
+
+        self.gridLayout.addWidget(self.pushButtonRemovePlot, 1, 0, 1, 1)
 
 
-        self.verticalLayout.addWidget(self.groupBoxErrors)
+        self.gridLayout2.addLayout(self.gridLayout, 0, 1, 1, 2)
+
+
+        self.verticalLayout.addWidget(self.groupBoxPlots)
 
 
         self.retranslateUi(PlotAnnotationWidget)
@@ -147,8 +180,10 @@ class Ui_PlotAnnotationWidget(object):
         self.labelThumbnailPreview.setText("")
         self.groupBox.setTitle(QCoreApplication.translate("PlotAnnotationWidget", u"Manual annotation:", None))
         self.pushButtonApply.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Apply", None))
-        self.groupBoxErrors.setTitle(QCoreApplication.translate("PlotAnnotationWidget", u"Plots:", None))
-        self.pushButtonFixAllErrors.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Annotate Plot Files", None))
-        self.pushButtonFixError.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Generate Thumbnail", None))
+        self.groupBoxPlots.setTitle(QCoreApplication.translate("PlotAnnotationWidget", u"Plots:", None))
+        self.pushButtonAnnotatePlots.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Annotate Plot Files", None))
+        self.pushButtonGenerateThumbnail.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Generate Thumbnail", None))
+        self.pushButtonAddPlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Add>>", None))
+        self.pushButtonRemovePlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"<<Remove", None))
     # retranslateUi
 

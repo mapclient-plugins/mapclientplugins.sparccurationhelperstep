@@ -108,7 +108,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBoxErrors">
+    <widget class="QGroupBox" name="groupBoxPlots">
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
@@ -116,17 +116,27 @@
       <string>Plots:</string>
      </property>
      <layout class="QGridLayout" name="gridLayout2">
-      <item row="0" column="1">
+      <item row="0" column="5">
+       <widget class="QListView" name="listViewPlots">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>3</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
        <layout class="QGridLayout" name="gridLayoutButtons">
         <item row="1" column="1">
-         <widget class="QPushButton" name="pushButtonFixAllErrors">
+         <widget class="QPushButton" name="pushButtonAnnotatePlots">
           <property name="text">
            <string>Annotate Plot Files</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QPushButton" name="pushButtonFixError">
+         <widget class="QPushButton" name="pushButtonGenerateThumbnail">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -154,14 +164,35 @@
        </layout>
       </item>
       <item row="0" column="0">
-       <widget class="QListView" name="listViewErrors">
+       <widget class="QTreeView" name="treeViewFileBrowser">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>1</horstretch>
+          <horstretch>4</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
        </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <layout class="QGridLayout" name="gridLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButtonAddPlot">
+          <property name="text">
+           <string>Add&gt;&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButtonRemovePlot">
+          <property name="text">
+           <string>&lt;&lt;Remove</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

@@ -1,4 +1,6 @@
-from PySide2 import QtCore
+import os
+
+from PySide6 import QtCore
 
 _HEADERS = ['Annotations']
 
@@ -59,19 +61,15 @@ class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
     def reset_internal_data(self):
         self._root_item = PlotAnnotationItem(_HEADERS)
 
-    def reset_data(self, data):
+    def reset_data(self, manifest):
         self.beginResetModel()
         self.reset_internal_data()
-        filenames = data.get_plot_filenames()
-        for filename in filenames:
-            item = PlotAnnotationItem([filename])
+        plot_filenames = manifest.scaffold_get_plot_files()
+        for plot_filename in plot_filenames:
+            item = PlotAnnotationItem([plot_filename])
             self._root_item.append_child(item)
-            thumbnail_filenames = data.get_derived_from_filenames(filename)
+            thumbnail_filenames = manifest.get_source_of(plot_filename)
             for thumbnail_filename in thumbnail_filenames:
-                thumbnail_source = data.get_source_of_filenames(thumbnail_filename)
-                if len(thumbnail_source) != 1 or filename not in thumbnail_source:
-                    print("Failed to find thumbnail source ...")
-                    continue
                 thumbnail_item = PlotAnnotationItem([thumbnail_filename])
                 item.append_child(thumbnail_item)
         self.endResetModel()

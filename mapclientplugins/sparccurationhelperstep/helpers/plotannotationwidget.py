@@ -1,12 +1,8 @@
-from PySide2 import QtWidgets, QtGui, QtCore
-from sparc.curation.tools.annotations.plot import PlotAnnotation
+from PySide6 import QtWidgets, QtGui, QtCore
 from sparc.curation.tools.definitions import DERIVED_FROM_COLUMN, SOURCE_OF_COLUMN, FILE_LOCATION_COLUMN
 from sparc.curation.tools.errors import ScaffoldAnnotationError, AnnotationDirectoryNoWriteAccess
 
-from sparc.curation.tools.manifests import ManifestDataFrame
-from sparc.curation.tools.ondisk import OnDiskFiles
-from sparc.curation.tools.utilities import convert_to_bytes
-from sparc.curation.tools.plot_annotations import annotate_plot
+import sparc.curation.tools.plot_annotations as plot_annotations
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_plotannotationwidget import Ui_PlotAnnotationWidget
 from mapclientplugins.sparccurationhelperstep.plotannotationsmodel import PlotAnnotationsModelTree
@@ -18,30 +14,26 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         super(PlotAnnotationWidget, self).__init__(parent)
         self._ui = Ui_PlotAnnotationWidget()
         self._ui.setupUi(self)
-        self._ui.pushButtonFixError.setEnabled(False)
 
-        self._manifest_dataframe = None
         self._location = None
-
+        self._plot_list = []
         self._plot_annotations_model_tree = None
 
         self._make_connections()
 
     def _make_connections(self):
-        self._ui.pushButtonFixError.clicked.connect(self._fix_error_button_clicked)
-        self._ui.pushButtonFixAllErrors.clicked.connect(self._fix_all_errors_button_clicked)
+        # self._ui.pushButtonGenerateThumbnail.clicked.connect(self._generate_thumbnail_button_clicked)
+        self._ui.pushButtonAnnotatePlots.clicked.connect(self._annotate_plots_button_clicked)
         self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
-        self._ui.listViewErrors.model()
-        # self._ui.treeViewPlotAnnotations.clicked.connect(self._plot_annotation_clicked)
+        self._ui.pushButtonAddPlot.clicked.connect(self._add_plot_clicked)
+        self._ui.pushButtonRemovePlot.clicked.connect(self._remove_plot_clicked)
+        self._ui.listViewPlots.model()
 
     def update_annotations(self, location):
-        max_size = convert_to_bytes('3MiB')
 
         self._location = location
-        # OnDiskFiles().setup_dataset(location, max_size)
-        plot_files = OnDiskFiles().get_plot_data()
-        thumbnail_files = OnDiskFiles().get_plot_data()
-
+        plot_files = plot_annotations.get_all_plots_path()
+        thumbnail_files = plot_annotations.get_all_thumbnail_path()
         subject_list = [*plot_files, *thumbnail_files]
         subject_model = _build_list_model(subject_list)
 
@@ -56,41 +48,55 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         self._ui.comboBoxAnnotationObject.setModel(object_model)
         self._ui.comboBoxSAnnotationPredicate.setModel(predicate_model)
 
-        self._reset_dataframe()
         self._plot_annotations_model_tree = PlotAnnotationsModelTree(location)
         self._ui.treeViewPlotAnnotations.setModel(self._plot_annotations_model_tree)
         selection_model = self._ui.treeViewPlotAnnotations.selectionModel()
         selection_model.selectionChanged.connect(self._annotation_selection_changed)
 
-        self._update_ui()
+        fileBrowserModel = QtWidgets.QFileSystemModel()
+        fileBrowserModel.setRootPath(QtCore.QDir.rootPath())
+        self._ui.treeViewFileBrowser.setModel(fileBrowserModel)
+        self._ui.treeViewFileBrowser.setRootIndex(fileBrowserModel.index(self._location))
 
-    def _reset_dataframe(self):
-        self._manifest_dataframe = ManifestDataFrame()
+        self._update_ui()
 
     def _update_ui(self):
         # Force refresh
-        self._plot_annotations_model_tree.reset_data(self._manifest_dataframe.get_plot_data())
-
-    def _error_selection_changed(self, i):
-        self._ui.pushButtonFixError.setEnabled(len(i))
+        self._plot_annotations_model_tree.reset_data(plot_annotations.get_manifest())
+        plots_model = _build_list_model(self._plot_list)
+        self._ui.listViewPlots.setModel(plots_model)
 
     def _annotation_selection_changed(self):
-        indexes = self._ui.treeViewPlotAnnotations.selectedIndexes()
         indexes = [self._ui.treeViewPlotAnnotations.currentIndex()]
-        # print("selected indexes", indexes)
-        # print("current indexes", self._ui.treeViewPlotAnnotations.currentIndex())
         if len(indexes) == 1:
             selection = indexes[0]
             thumbnail_file = self._plot_annotations_model_tree.data(selection, QtCore.Qt.DisplayRole)
-            thumbnail_filepath = ManifestDataFrame().get_filepath_on_disk(thumbnail_file)
-            # print(thumbnail_file)
-            # print(thumbnail_filepath)
+            thumbnail_filepath = plot_annotations.get_path_by_name(thumbnail_file)
 
             pixmap = QtGui.QPixmap(thumbnail_filepath)
             pixmap = pixmap.scaled(512, 512, QtCore.Qt.KeepAspectRatio)
             self._ui.labelThumbnailPreview.setPixmap(pixmap)
         else:
             self._ui.labelThumbnailPreview.clear()
+
+    def _add_plot_clicked(self):
+        # Get path for current selected file in the file tree view
+        index = self._ui.treeViewFileBrowser.currentIndex()
+        filePath = self._ui.treeViewFileBrowser.model().filePath(index)
+
+        # Add the selected file to the plot list view
+        if filePath not in self._plot_list:
+            self._plot_list.append(filePath)
+        self._update_ui()
+
+    def _remove_plot_clicked(self):
+        # Remove the selected file to the plot list view
+        index = self._ui.listViewPlots.currentIndex()
+        item = self._ui.listViewPlots.model().itemFromIndex(index)
+        if item:
+            selected_plot = self._ui.listViewPlots.model().itemFromIndex(index).text()
+            self._plot_list.remove(selected_plot)
+            self._update_ui()
 
     def _errors_item_clicked(self, model_index):
         """
@@ -101,16 +107,6 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         error = item.data()
         if error != self._currentError:
             self._currentError = error
-
-    def _fix_error(self, error):
-        success = False
-        try:
-            fix_error(error)
-            success = True
-        except AnnotationDirectoryNoWriteAccess:
-            QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
-
-        return success
 
     def _apply_button_clicked(self):
         subject_text = self._ui.comboBoxAnnotationSubject.currentText()
@@ -130,39 +126,27 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
             append = True
 
         self._manifest_dataframe.update_column_content(subject_text, predicate_text, object_value, append)
-        self._reset_dataframe()
         self._update_ui()
 
-    def _fix_error_button_clicked(self):
-        index = self._ui.listViewErrors.currentIndex()
-        current_error = self._ui.listViewErrors.model().data(index, QtCore.Qt.UserRole)
-        print(current_error)
-        confirmationMessage = get_confirmation_message("Something")
+    def _annotate_plots_button_clicked(self):
+        confirmationMessage = plot_annotations.get_confirmation_message()
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
-            self._fix_error(current_error)
-            self._reset_dataframe()
-            self._update_ui()
+            try:
+                plot_annotations.annotate_plot_from_plot_paths(self._plot_list)
+            except AnnotationDirectoryNoWriteAccess:
+                QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
 
-    def _fix_all_errors_button_clicked(self):
-        confirmationMessage = get_confirmation_message()
-        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if result == QtWidgets.QMessageBox.Yes:
-            for e in self._errors:
-                if not self._fix_error(e):
-                    break
-
-            self._reset_dataframe()
             self._update_ui()
 
 
 def _build_list_model(annotation_items):
     model = QtGui.QStandardItemModel()
     for i in annotation_items:
-        if isinstance(i, PlotAnnotation):
-            item = QtGui.QStandardItem(i.get_filename())
-        else:
-            item = QtGui.QStandardItem(str(i))
+        # if isinstance(i, PlotAnnotation):
+        #     item = QtGui.QStandardItem(i.get_filename())
+        # else:
+        item = QtGui.QStandardItem(str(i))
 
         item.setData(i, QtCore.Qt.UserRole)
         item.setEditable(False)

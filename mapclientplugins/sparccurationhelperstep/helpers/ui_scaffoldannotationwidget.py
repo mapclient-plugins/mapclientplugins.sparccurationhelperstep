@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'scaffoldannotationwidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.1
+## Created by: Qt User Interface Compiler version 6.5.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
-    QHBoxLayout, QHeaderView, QLabel, QListView,
-    QPushButton, QSizePolicy, QSpacerItem, QTreeView,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QListView, QPushButton, QSizePolicy, QSpacerItem,
+    QTreeView, QVBoxLayout, QWidget)
 
 class Ui_ScaffoldAnnotationWidget(object):
     def setupUi(self, ScaffoldAnnotationWidget):

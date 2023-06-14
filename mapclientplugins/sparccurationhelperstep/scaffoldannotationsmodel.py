@@ -65,17 +65,16 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
     def reset_internal_data(self):
         self._root_item = ScaffoldAnnotationItem('', _HEADER)
 
-    def reset_data(self, data):
+    def reset_data(self, manifest):
         self.beginResetModel()
         self.reset_internal_data()
-        metadata_filenames = data.get_metadata_filenames()
+        metadata_filenames = manifest.scaffold_get_metadata_files()
         for metadata_filename in metadata_filenames:
-            manifest_dir = data.get_manifest_directory(metadata_filename)
-            metadata = data.get_filename(metadata_filename)
+            manifest_dir = manifest.get_manifest_directory(metadata_filename)[0]
+            metadata = manifest.get_filename(metadata_filename)
             item = ScaffoldAnnotationItem(metadata_filename, metadata)
             self._root_item.append_child(item)
-            view_filenames = data.get_source_of_filenames(metadata_filename)
-
+            view_filenames = manifest.get_source_of(metadata_filename)
             for view_list in view_filenames:
                 # View filenames can have multiple lines separated by a newline.
                 for view in view_list.split('\n'):
@@ -83,7 +82,7 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
                     view_filename = os.path.join(manifest_dir, view)
                     view_item = ScaffoldAnnotationItem(view_filename, view)
                     item.append_child(view_item)
-                    thumbnail_filenames = data.get_source_of_filenames(view_filename)
+                    thumbnail_filenames = manifest.get_source_of(view_filename)
                     for thumbnail in thumbnail_filenames:
                         if not isinstance(thumbnail, float):
                             thumbnail_filename = os.path.join(manifest_dir, thumbnail)

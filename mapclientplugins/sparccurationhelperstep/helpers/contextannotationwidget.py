@@ -14,8 +14,8 @@ from mapclientplugins.sparccurationhelperstep.helpers.sampleswidget import Sampl
 from mapclientplugins.sparccurationhelperstep.helpers.viewswidget import ViewsWidget
 
 import sparc.curation.tools.context_annotations as context_annotations
-from sparc.curation.tools.contextinfo import ContextInfoAnnotation
-from sparc.curation.tools.ondisk import is_annotation_csv_file, OnDiskFiles
+from sparc.curation.tools.models.contextinfo import ContextInfoAnnotation
+from sparc.curation.tools.helpers.file_helper import is_annotation_csv_file, OnDiskFiles
 
 
 class ContextAnnotationWidget(QtWidgets.QWidget):
@@ -36,7 +36,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def update_info(self, location):
         self._location = location
-        metadata_files = OnDiskFiles().get_scaffold_data().get_metadata_files()
+        metadata_files = OnDiskFiles().get_metadata_files()
         metadata_list = [*metadata_files]
 
         metadata_list_model = _build_list_model(metadata_list)
@@ -109,7 +109,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         assert len(self._context_info_list) == len(metadata_files)
 
         self._ui.comboBoxBanner.setModel(thumbnail_list_model)
-        self._populate_ui(self._context_info_list[self._current_index])
+        if self._current_index:
+            self._populate_ui(self._context_info_list[self._current_index])
 
         # Find annotation file.
         annotation_files = context_annotations.search_for_annotation_csv_files(location, convert_to_bytes("2MiB"))
