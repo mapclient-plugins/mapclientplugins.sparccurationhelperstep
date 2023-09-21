@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets, QtGui, QtCore
 from sparc.curation.tools.definitions import DERIVED_FROM_COLUMN, SOURCE_OF_COLUMN, FILE_LOCATION_COLUMN
-from sparc.curation.tools.errors import ScaffoldAnnotationError, AnnotationDirectoryNoWriteAccess
+from sparc.curation.tools.errors import AnnotationDirectoryNoWriteAccess
 
 import sparc.curation.tools.plot_annotations as plot_annotations
 
@@ -22,10 +22,10 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         self._make_connections()
 
     def _make_connections(self):
-        # self._ui.pushButtonGenerateThumbnail.clicked.connect(self._generate_thumbnail_button_clicked)
         self._ui.pushButtonAnnotatePlots.clicked.connect(self._annotate_plots_button_clicked)
         self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
         self._ui.pushButtonAddPlot.clicked.connect(self._add_plot_clicked)
+        self._ui.pushButtonAddAllPlot.clicked.connect(self._add_all_plot_clicked)
         self._ui.pushButtonRemovePlot.clicked.connect(self._remove_plot_clicked)
         self._ui.listViewPlots.model()
 
@@ -33,7 +33,7 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
 
         self._location = location
         plot_files = plot_annotations.get_all_plots_path()
-        thumbnail_files = plot_annotations.get_all_thumbnail_path()
+        thumbnail_files = plot_annotations.get_plot_thumbnails()
         subject_list = [*plot_files, *thumbnail_files]
         subject_model = _build_list_model(subject_list)
 
@@ -62,7 +62,7 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
 
     def _update_ui(self):
         # Force refresh
-        self._plot_annotations_model_tree.reset_data(plot_annotations.get_manifest())
+        self._plot_annotations_model_tree.reset_data(plot_annotations.get_annotated_plot_dictionary())
         plots_model = _build_list_model(self._plot_list)
         self._ui.listViewPlots.setModel(plots_model)
 
@@ -70,10 +70,8 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         indexes = [self._ui.treeViewPlotAnnotations.currentIndex()]
         if len(indexes) == 1:
             selection = indexes[0]
-            thumbnail_file = self._plot_annotations_model_tree.data(selection, QtCore.Qt.DisplayRole)
-            thumbnail_filepath = plot_annotations.get_path_by_name(thumbnail_file)
-
-            pixmap = QtGui.QPixmap(thumbnail_filepath)
+            thumbnail_file = self._plot_annotations_model_tree.data(selection, QtCore.Qt.UserRole)
+            pixmap = QtGui.QPixmap(thumbnail_file)
             pixmap = pixmap.scaled(512, 512, QtCore.Qt.KeepAspectRatio)
             self._ui.labelThumbnailPreview.setPixmap(pixmap)
         else:
@@ -87,6 +85,10 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         # Add the selected file to the plot list view
         if filePath not in self._plot_list:
             self._plot_list.append(filePath)
+        self._update_ui()
+
+    def _add_all_plot_clicked(self):
+        self._plot_list = plot_annotations.get_all_plots_path()
         self._update_ui()
 
     def _remove_plot_clicked(self):
@@ -114,8 +116,8 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         predicate_text = self._ui.comboBoxSAnnotationPredicate.currentText()
 
         if object_text != "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
-            result = self._manifest_dataframe.get_matching_entry(FILE_LOCATION_COLUMN, object_text)
-            object_value = result[0]
+            result = plot_annotations.get_manifest().get_matching_entry(FILE_LOCATION_COLUMN, object_text)
+            object_value = result[0] if result else None
         elif object_text == "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
             object_value = ""
         else:
@@ -125,7 +127,7 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         if object_value and predicate_text == SOURCE_OF_COLUMN:
             append = True
 
-        self._manifest_dataframe.update_column_content(subject_text, predicate_text, object_value, append)
+        plot_annotations.get_manifest().update_column_content(subject_text, predicate_text, object_value, append)
         self._update_ui()
 
     def _annotate_plots_button_clicked(self):

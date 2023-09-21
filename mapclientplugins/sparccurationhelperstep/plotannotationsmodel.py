@@ -2,13 +2,14 @@ import os
 
 from PySide6 import QtCore
 
-_HEADERS = ['Annotations']
+_HEADERS = 'Annotations'
 
 
 class PlotAnnotationItem(object):
-    def __init__(self, data):
+    def __init__(self, location, display):
         self._children = []
-        self._data = data
+        self._location = location
+        self._display = display
         self._parent_item = None
 
     def set_parent(self, parent_item):
@@ -31,11 +32,14 @@ class PlotAnnotationItem(object):
         return len(self._children)
 
     def column_count(self):
-        return len(self._data)
+        return 1
 
-    def data(self, column):
-        if 0 <= column < len(self._data):
-            return self._data[column]
+    def data(self, column, role):
+        if column == 0:
+            if role == QtCore.Qt.DisplayRole:
+                return self._display
+            elif role == QtCore.Qt.UserRole:
+                return self._location
 
         return None
 
@@ -59,18 +63,16 @@ class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
         self.reset_internal_data()
 
     def reset_internal_data(self):
-        self._root_item = PlotAnnotationItem(_HEADERS)
+        self._root_item = PlotAnnotationItem('', _HEADERS)
 
-    def reset_data(self, manifest):
+    def reset_data(self, annotated_plot_dictionary):
         self.beginResetModel()
         self.reset_internal_data()
-        plot_filenames = manifest.scaffold_get_plot_files()
-        for plot_filename in plot_filenames:
-            item = PlotAnnotationItem([plot_filename])
+        for plot, thumbnails in annotated_plot_dictionary.items():
+            item = PlotAnnotationItem(plot, os.path.relpath(plot, self._common_path))
             self._root_item.append_child(item)
-            thumbnail_filenames = manifest.get_source_of(plot_filename)
-            for thumbnail_filename in thumbnail_filenames:
-                thumbnail_item = PlotAnnotationItem([thumbnail_filename])
+            for thumbnail in thumbnails:
+                thumbnail_item = PlotAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
                 item.append_child(thumbnail_item)
         self.endResetModel()
 
@@ -94,16 +96,13 @@ class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
 
         return self._root_item.column_count()
 
-    def data(self, index, role):
+    def data(self, index, role=QtCore.Qt.DisplayRole):
         if not index.isValid():
             return None
 
         item = index.internalPointer()
 
-        if role == QtCore.Qt.DisplayRole:
-            return item.data(index.column()).replace(self._common_path, '')
-
-        return None
+        return item.data(index.column(), role)
 
     def index(self, row, column, parent):
         if not self.hasIndex(row, column, parent):
@@ -115,11 +114,8 @@ class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
             parent_item = parent.internalPointer()
 
         child_item = parent_item.child(row)
-        # print("PlotAnnotationsModel index child_item ", child_item)
         if child_item:
             return self.createIndex(row, column, child_item)
-
-        # print("PlotAnnotationsModel index 2 ", row)
 
         return QtCore.QModelIndex()
 
@@ -149,76 +145,6 @@ class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if role == QtCore.Qt.DisplayRole:
             if orientation == QtCore.Qt.Horizontal:
-                return self._root_item.data(section)
+                return self._root_item.data(section, role)
 
         return None
-
-
-class PlotAnnotationsModel(QtCore.QAbstractTableModel):
-    def __init__(self, common_path, parent=None):
-        super(PlotAnnotationsModel, self).__init__(parent)
-        self._headers = ['Plot Metadata', 'Associated View', 'Associated Thumbnail']
-
-        self._data = []
-        self._common_path = common_path
-        self._row_count = 0
-
-    def resetData(self, data):
-        self.beginResetModel()
-        self._data.clear()
-        filenames = data.get_metadata_filenames()
-        for filename in filenames:
-            thumbnail_filename = data.get_derived_filenames(filename)
-            self._data.append([filename, ",".join(thumbnail_filename)])
-        self._row_count = len(self._data)
-        self.endResetModel()
-
-    def add_model_row(self):
-        index = self.index(self._row_count, 0)
-        self.beginInsertRows(index, self._row_count, self._row_count)
-        self._data[self._row_count] = 'string'
-        self._row_count = len(self._data)
-        self.endInsertRows()
-
-    def _get_item_from_index(self, index):
-        return self._data[index.row()]
-
-    def rowCount(self, parent):
-        return self._row_count
-
-    def columnCount(self, parent):
-        return 3
-
-    def data(self, index, role):
-        if not index.isValid():
-            return None
-
-        item = self._get_item_from_index(index)
-
-        if role == QtCore.Qt.DisplayRole:
-            return item[index.column()].replace(self._common_path, '')
-
-        if role == QtCore.Qt.UserRole:
-            return item[index.column()]
-
-        return None
-
-    def setData(self, index, value, role=QtCore.Qt.EditRole):
-        if index.isValid():
-            item = self._get_item_from_index(index)
-            if role == QtCore.Qt.EditRole:
-                self.dataChanged.emit(index, index)
-                return True
-
-        return False
-
-    def flags(self, index):
-        if index.isValid():
-            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-
-        return QtCore.Qt.NoItemFlags
-
-    def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:
-            if orientation == QtCore.Qt.Horizontal:
-                return self._headers[section]

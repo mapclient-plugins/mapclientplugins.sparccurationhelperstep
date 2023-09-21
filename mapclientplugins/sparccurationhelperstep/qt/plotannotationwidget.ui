@@ -135,19 +135,6 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButtonGenerateThumbnail">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Generate Thumbnail</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0">
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
@@ -186,6 +173,13 @@
          </widget>
         </item>
         <item row="1" column="0">
+         <widget class="QPushButton" name="pushButtonAddAllPlot">
+          <property name="text">
+           <string>Add All&gt;&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
          <widget class="QPushButton" name="pushButtonRemovePlot">
           <property name="text">
            <string>&lt;&lt;Remove</string>

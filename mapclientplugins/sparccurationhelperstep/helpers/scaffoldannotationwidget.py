@@ -32,12 +32,9 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
     def update_annotations(self, location):
         self._location = location
 
-        self._scaffold_files_ondisk = scaffold_annotations.get_scaffold_data_ondisk()
-        self._scaffold_annotations = scaffold_annotations.get_manifest()
-
-        metadata_files = self._scaffold_files_ondisk.get_metadata_files()
-        view_files = self._scaffold_files_ondisk.get_view_files()
-        thumbnail_files = self._scaffold_files_ondisk.get_thumbnail_files()
+        metadata_files = scaffold_annotations.get_on_disk_metadata_files()
+        view_files = scaffold_annotations.get_on_disk_view_files()
+        thumbnail_files = scaffold_annotations.get_on_disk_thumbnail_files()
 
         subject_list = [*metadata_files, *view_files, *thumbnail_files]
         subject_model = _build_list_model(subject_list)
@@ -62,7 +59,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
     def _update_ui(self):
         # Force refresh
-        self._scaffold_annotations_model_tree.reset_data(self._scaffold_annotations)
+        self._scaffold_annotations_model_tree.reset_data(scaffold_annotations.get_annotated_scaffold_dictionary())
 
         self._errors = scaffold_annotations.get_errors()
         errors_model = _build_list_model(self._errors)
@@ -114,7 +111,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         predicate_text = self._ui.comboBoxSAnnotationPredicate.currentText()
 
         if object_text != "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
-            result = self._scaffold_annotations.get_matching_entry(FILE_LOCATION_COLUMN, object_text)
+            result = scaffold_annotations.get_manifest().get_matching_entry(FILE_LOCATION_COLUMN, object_text)
             object_value = result[0]
         elif object_text == "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
             object_value = ""
@@ -125,7 +122,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         if object_value and predicate_text == SOURCE_OF_COLUMN:
             append = self._ui.checkBoxAnnotationMode.isChecked()
 
-        self._scaffold_annotations.update_column_content(subject_text, predicate_text, object_value, append)
+        scaffold_annotations.get_manifest().update_column_content(subject_text, predicate_text, object_value, append)
         self._update_ui()
 
     def _fix_error_button_clicked(self):

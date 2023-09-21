@@ -45,10 +45,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._current_index = 0
         self._ui.comboBoxContextMetadata.blockSignals(False)
 
-        potential_thumbnails = list(pathlib.Path(self._location).rglob("*.png"))
-        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpeg"))
-        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpg"))
-        thumbnail_files = list(set(potential_thumbnails))
+        thumbnail_files = OnDiskFiles().get_all_image_files()
 
         thumbnail_list_model = _build_list_model(thumbnail_files)
 

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'plotannotationwidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -121,16 +121,6 @@ class Ui_PlotAnnotationWidget(object):
 
         self.gridLayoutButtons.addWidget(self.pushButtonAnnotatePlots, 1, 1, 1, 1)
 
-        self.pushButtonGenerateThumbnail = QPushButton(self.groupBoxPlots)
-        self.pushButtonGenerateThumbnail.setObjectName(u"pushButtonGenerateThumbnail")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.pushButtonGenerateThumbnail.sizePolicy().hasHeightForWidth())
-        self.pushButtonGenerateThumbnail.setSizePolicy(sizePolicy3)
-
-        self.gridLayoutButtons.addWidget(self.pushButtonGenerateThumbnail, 0, 1, 1, 1)
-
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.gridLayoutButtons.addItem(self.horizontalSpacer_2, 0, 0, 1, 1)
@@ -140,11 +130,11 @@ class Ui_PlotAnnotationWidget(object):
 
         self.treeViewFileBrowser = QTreeView(self.groupBoxPlots)
         self.treeViewFileBrowser.setObjectName(u"treeViewFileBrowser")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy4.setHorizontalStretch(4)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.treeViewFileBrowser.sizePolicy().hasHeightForWidth())
-        self.treeViewFileBrowser.setSizePolicy(sizePolicy4)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(4)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.treeViewFileBrowser.sizePolicy().hasHeightForWidth())
+        self.treeViewFileBrowser.setSizePolicy(sizePolicy3)
 
         self.gridLayout2.addWidget(self.treeViewFileBrowser, 0, 0, 1, 1)
 
@@ -156,10 +146,15 @@ class Ui_PlotAnnotationWidget(object):
 
         self.gridLayout.addWidget(self.pushButtonAddPlot, 0, 0, 1, 1)
 
+        self.pushButtonAddAllPlot = QPushButton(self.groupBoxPlots)
+        self.pushButtonAddAllPlot.setObjectName(u"pushButtonAddAllPlot")
+
+        self.gridLayout.addWidget(self.pushButtonAddAllPlot, 1, 0, 1, 1)
+
         self.pushButtonRemovePlot = QPushButton(self.groupBoxPlots)
         self.pushButtonRemovePlot.setObjectName(u"pushButtonRemovePlot")
 
-        self.gridLayout.addWidget(self.pushButtonRemovePlot, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButtonRemovePlot, 2, 0, 1, 1)
 
 
         self.gridLayout2.addLayout(self.gridLayout, 0, 1, 1, 2)
@@ -182,8 +177,8 @@ class Ui_PlotAnnotationWidget(object):
         self.pushButtonApply.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Apply", None))
         self.groupBoxPlots.setTitle(QCoreApplication.translate("PlotAnnotationWidget", u"Plots:", None))
         self.pushButtonAnnotatePlots.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Annotate Plot Files", None))
-        self.pushButtonGenerateThumbnail.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Generate Thumbnail", None))
         self.pushButtonAddPlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Add>>", None))
+        self.pushButtonAddAllPlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Add All>>", None))
         self.pushButtonRemovePlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"<<Remove", None))
     # retranslateUi
 

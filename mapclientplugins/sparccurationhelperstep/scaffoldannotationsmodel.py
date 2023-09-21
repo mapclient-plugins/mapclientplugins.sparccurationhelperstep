@@ -65,29 +65,18 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
     def reset_internal_data(self):
         self._root_item = ScaffoldAnnotationItem('', _HEADER)
 
-    def reset_data(self, manifest):
+    def reset_data(self, annotated_scaffold_dictionary):
         self.beginResetModel()
         self.reset_internal_data()
-        metadata_filenames = manifest.scaffold_get_metadata_files()
-        for metadata_filename in metadata_filenames:
-            manifest_dir = manifest.get_manifest_directory(metadata_filename)[0]
-            metadata = manifest.get_filename(metadata_filename)
-            item = ScaffoldAnnotationItem(metadata_filename, metadata)
+        for metadata, views in annotated_scaffold_dictionary.items():
+            item = ScaffoldAnnotationItem(metadata, os.path.relpath(metadata, self._common_path))
             self._root_item.append_child(item)
-            view_filenames = manifest.get_source_of(metadata_filename)
-            for view_list in view_filenames:
-                # View filenames can have multiple lines separated by a newline.
-                for view in view_list.split('\n'):
-                    view_filenames = view_filenames[0].split('\n')
-                    view_filename = os.path.join(manifest_dir, view)
-                    view_item = ScaffoldAnnotationItem(view_filename, view)
-                    item.append_child(view_item)
-                    thumbnail_filenames = manifest.get_source_of(view_filename)
-                    for thumbnail in thumbnail_filenames:
-                        if not isinstance(thumbnail, float):
-                            thumbnail_filename = os.path.join(manifest_dir, thumbnail)
-                            thumbnail_item = ScaffoldAnnotationItem(thumbnail_filename, thumbnail)
-                            view_item.append_child(thumbnail_item)
+            for view, thumbnail_filenames in views.items():
+                view_item = ScaffoldAnnotationItem(view, os.path.relpath(view, self._common_path))
+                item.append_child(view_item)
+                for thumbnail in thumbnail_filenames:
+                    thumbnail_item = ScaffoldAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
+                    view_item.append_child(thumbnail_item)
 
         self.endResetModel()
 
