@@ -1,3 +1,5 @@
+import os
+
 from PySide6 import QtWidgets, QtGui, QtCore
 from sparc.curation.tools.definitions import DERIVED_FROM_COLUMN, SOURCE_OF_COLUMN, FILE_LOCATION_COLUMN
 from sparc.curation.tools.errors import AnnotationDirectoryNoWriteAccess
@@ -80,7 +82,7 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
     def _add_plot_clicked(self):
         # Get path for current selected file in the file tree view
         index = self._ui.treeViewFileBrowser.currentIndex()
-        filePath = self._ui.treeViewFileBrowser.model().filePath(index)
+        filePath = os.path.normpath(self._ui.treeViewFileBrowser.model().filePath(index))
 
         # Add the selected file to the plot list view
         if filePath not in self._plot_list:
