@@ -2,56 +2,9 @@ import os
 
 from PySide6 import QtCore
 
+from mapclientplugins.sparccurationhelperstep.scaffoldannotationsmodel import ScaffoldAnnotationItem
+
 _HEADERS = 'Annotations'
-
-
-class PlotAnnotationItem(object):
-    def __init__(self, location, display):
-        self._children = []
-        self._location = location
-        self._display = display
-        self._parent_item = None
-
-    def set_parent(self, parent_item):
-        self._parent_item = parent_item
-
-    def append_child(self, child):
-        self._children.append(child)
-        child.set_parent(self)
-
-    def index_of(self, item):
-        return self._children.index(item)
-
-    def child(self, row):
-        if 0 <= row < len(self._children):
-            return self._children[row]
-
-        return None
-
-    def child_count(self):
-        return len(self._children)
-
-    def column_count(self):
-        return 1
-
-    def data(self, column, role):
-        if column == 0:
-            if role == QtCore.Qt.DisplayRole:
-                return self._display
-            elif role == QtCore.Qt.UserRole:
-                return self._location
-
-        return None
-
-    def row(self):
-
-        if self._parent_item is not None:
-            return self._parent_item.index_of(self)
-
-        return 0
-
-    def parent_item(self):
-        return self._parent_item
 
 
 class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
@@ -63,16 +16,16 @@ class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
         self.reset_internal_data()
 
     def reset_internal_data(self):
-        self._root_item = PlotAnnotationItem('', _HEADERS)
+        self._root_item = ScaffoldAnnotationItem('', _HEADERS)
 
     def reset_data(self, annotated_plot_dictionary):
         self.beginResetModel()
         self.reset_internal_data()
         for plot, thumbnails in annotated_plot_dictionary.items():
-            item = PlotAnnotationItem(plot, os.path.relpath(plot, self._common_path))
+            item = ScaffoldAnnotationItem(plot, os.path.relpath(plot, self._common_path))
             self._root_item.append_child(item)
             for thumbnail in thumbnails:
-                thumbnail_item = PlotAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
+                thumbnail_item = ScaffoldAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
                 item.append_child(thumbnail_item)
         self.endResetModel()
 

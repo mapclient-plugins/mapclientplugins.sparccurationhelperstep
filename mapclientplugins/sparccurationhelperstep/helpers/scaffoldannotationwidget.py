@@ -111,8 +111,8 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         predicate_text = self._ui.comboBoxSAnnotationPredicate.currentText()
 
         if object_text != "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
-            result = scaffold_annotations.get_manifest().get_matching_entry(FILE_LOCATION_COLUMN, object_text)
-            object_value = result[0]
+            result = scaffold_annotations.get_filename_by_location(object_text)
+            object_value = result[0] if result else ""
         elif object_text == "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
             object_value = ""
         else:
@@ -122,7 +122,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         if object_value and predicate_text == SOURCE_OF_COLUMN:
             append = self._ui.checkBoxAnnotationMode.isChecked()
 
-        scaffold_annotations.get_manifest().update_column_content(subject_text, predicate_text, object_value, append)
+        scaffold_annotations.update_column_content(subject_text, predicate_text, object_value, append)
         self._update_ui()
 
     def _fix_error_button_clicked(self):

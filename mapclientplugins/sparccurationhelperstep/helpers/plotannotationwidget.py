@@ -100,23 +100,13 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
             self._plot_list.remove(selected_plot)
             self._update_ui()
 
-    def _errors_item_clicked(self, model_index):
-        """
-        Changes current step and possibly changes checked/run status.
-        """
-        model = model_index.model()
-        item = model.itemFromIndex(model_index)
-        error = item.data()
-        if error != self._currentError:
-            self._currentError = error
-
     def _apply_button_clicked(self):
         subject_text = self._ui.comboBoxAnnotationSubject.currentText()
         object_text = self._ui.comboBoxAnnotationObject.currentText()
         predicate_text = self._ui.comboBoxSAnnotationPredicate.currentText()
 
         if object_text != "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
-            result = plot_annotations.get_manifest().get_matching_entry(FILE_LOCATION_COLUMN, object_text)
+            result = plot_annotations.get_filename_by_location(object_text)
             object_value = result[0] if result else None
         elif object_text == "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
             object_value = ""
@@ -127,7 +117,7 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         if object_value and predicate_text == SOURCE_OF_COLUMN:
             append = True
 
-        plot_annotations.get_manifest().update_column_content(subject_text, predicate_text, object_value, append)
+        plot_annotations.update_column_content(subject_text, predicate_text, object_value, append)
         self._update_ui()
 
     def _annotate_plots_button_clicked(self):
