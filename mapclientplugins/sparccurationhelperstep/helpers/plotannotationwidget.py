@@ -122,16 +122,25 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         plot_annotations.update_column_content(subject_text, predicate_text, object_value, append)
         self._update_ui()
 
-    def _annotate_plots_button_clicked(self):
-        confirmationMessage = plot_annotations.get_confirmation_message()
-        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if result == QtWidgets.QMessageBox.Yes:
-            try:
-                plot_annotations.annotate_plot_from_plot_paths(self._plot_list)
-            except AnnotationDirectoryNoWriteAccess:
-                QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
+    def _prepare_progress_dialog(self, label_text, button_text, total):
+        progress = QtWidgets.QProgressDialog(label_text, button_text, 0, total, self)
+        progress.setWindowModality(QtCore.Qt.WindowModality.WindowModal)
+        return progress
 
-            self._update_ui()
+    def _annotate_plots_button_clicked(self):
+        self._progress_dialog = self._prepare_progress_dialog("Annotate plot files", "Cancel", len(self._plot_list))
+        count = 0
+        try:
+            for plot in self._plot_list:
+                plot_annotations.annotate_one_plot(plot)
+                count += 1
+                self._progress_dialog.setValue(count)
+                if self._progress_dialog.wasCanceled():
+                    break
+        except AnnotationDirectoryNoWriteAccess:
+            QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
+
+        self._update_ui()
 
 
 def _build_list_model(annotation_items):
