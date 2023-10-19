@@ -126,40 +126,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="6">
-       <layout class="QGridLayout" name="gridLayoutButtons">
-        <item row="1" column="1">
-         <widget class="QPushButton" name="pushButtonAnnotatePlots">
-          <property name="text">
-           <string>Annotate Plot Files</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="0">
-       <widget class="QTreeView" name="treeViewFileBrowser">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>4</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1" colspan="2">
        <layout class="QGridLayout" name="gridLayout">
         <property name="sizeConstraint">
@@ -187,6 +153,122 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="0" column="6">
+       <layout class="QVBoxLayout" name="verticalLayoutPlotEditor">
+               <item row="0" column="0">
+       <widget class="QWidget" name="PlotEditorsContainer">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayoutPlotEditors">
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Plot type:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboBoxPlotType">
+           <item>
+            <property name="text">
+             <string>timeseries</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>heatmap</string>
+            </property>
+           </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>x column:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEditXColumn"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>y columns:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEditYColumns"/>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Has header:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QCheckBox" name="checkBoxHasHeader">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Delimiter:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QComboBox" name="comboBoxDelimiter">
+           <item>
+            <property name="text">
+             <string>tab</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>comma</string>
+            </property>
+           </item>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QPushButton" name="pushButtonAnnotateCurrentPlot">
+          <property name="text">
+           <string>Annotate This Plot File</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+       </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButtonAnnotateAllPlots">
+          <property name="text">
+           <string>Annotate All Plot Files</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="0">
+       <widget class="QTreeView" name="treeViewFileBrowser">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>4</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

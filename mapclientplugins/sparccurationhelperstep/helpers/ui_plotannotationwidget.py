@@ -15,10 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
-    QHBoxLayout, QHeaderView, QLabel, QLayout,
-    QListView, QPushButton, QSizePolicy, QSpacerItem,
-    QTreeView, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLayout, QLineEdit, QListView, QPushButton,
+    QSizePolicy, QSpacerItem, QTreeView, QVBoxLayout,
+    QWidget)
 
 class Ui_PlotAnnotationWidget(object):
     def setupUi(self, PlotAnnotationWidget):
@@ -114,30 +115,6 @@ class Ui_PlotAnnotationWidget(object):
 
         self.gridLayout2.addWidget(self.listViewPlots, 0, 5, 1, 1)
 
-        self.gridLayoutButtons = QGridLayout()
-        self.gridLayoutButtons.setObjectName(u"gridLayoutButtons")
-        self.pushButtonAnnotatePlots = QPushButton(self.groupBoxPlots)
-        self.pushButtonAnnotatePlots.setObjectName(u"pushButtonAnnotatePlots")
-
-        self.gridLayoutButtons.addWidget(self.pushButtonAnnotatePlots, 1, 1, 1, 1)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.gridLayoutButtons.addItem(self.horizontalSpacer_2, 0, 0, 1, 1)
-
-
-        self.gridLayout2.addLayout(self.gridLayoutButtons, 0, 6, 1, 1)
-
-        self.treeViewFileBrowser = QTreeView(self.groupBoxPlots)
-        self.treeViewFileBrowser.setObjectName(u"treeViewFileBrowser")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        sizePolicy3.setHorizontalStretch(4)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.treeViewFileBrowser.sizePolicy().hasHeightForWidth())
-        self.treeViewFileBrowser.setSizePolicy(sizePolicy3)
-
-        self.gridLayout2.addWidget(self.treeViewFileBrowser, 0, 0, 1, 1)
-
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -159,6 +136,96 @@ class Ui_PlotAnnotationWidget(object):
 
         self.gridLayout2.addLayout(self.gridLayout, 0, 1, 1, 2)
 
+        self.verticalLayoutPlotEditor = QVBoxLayout()
+        self.verticalLayoutPlotEditor.setObjectName(u"verticalLayoutPlotEditor")
+        self.PlotEditorsContainer = QWidget(self.groupBoxPlots)
+        self.PlotEditorsContainer.setObjectName(u"PlotEditorsContainer")
+        self.PlotEditorsContainer.setEnabled(False)
+        self.gridLayoutPlotEditors = QGridLayout(self.PlotEditorsContainer)
+        self.gridLayoutPlotEditors.setObjectName(u"gridLayoutPlotEditors")
+        self.gridLayoutPlotEditors.setContentsMargins(0, 0, 0, 0)
+        self.label = QLabel(self.PlotEditorsContainer)
+        self.label.setObjectName(u"label")
+
+        self.gridLayoutPlotEditors.addWidget(self.label, 2, 0, 1, 1)
+
+        self.comboBoxPlotType = QComboBox(self.PlotEditorsContainer)
+        self.comboBoxPlotType.addItem("")
+        self.comboBoxPlotType.addItem("")
+        self.comboBoxPlotType.setObjectName(u"comboBoxPlotType")
+
+        self.gridLayoutPlotEditors.addWidget(self.comboBoxPlotType, 2, 1, 1, 1)
+
+        self.label_5 = QLabel(self.PlotEditorsContainer)
+        self.label_5.setObjectName(u"label_5")
+
+        self.gridLayoutPlotEditors.addWidget(self.label_5, 3, 0, 1, 1)
+
+        self.lineEditXColumn = QLineEdit(self.PlotEditorsContainer)
+        self.lineEditXColumn.setObjectName(u"lineEditXColumn")
+
+        self.gridLayoutPlotEditors.addWidget(self.lineEditXColumn, 3, 1, 1, 1)
+
+        self.label_4 = QLabel(self.PlotEditorsContainer)
+        self.label_4.setObjectName(u"label_4")
+
+        self.gridLayoutPlotEditors.addWidget(self.label_4, 4, 0, 1, 1)
+
+        self.lineEditYColumns = QLineEdit(self.PlotEditorsContainer)
+        self.lineEditYColumns.setObjectName(u"lineEditYColumns")
+
+        self.gridLayoutPlotEditors.addWidget(self.lineEditYColumns, 4, 1, 1, 1)
+
+        self.label_3 = QLabel(self.PlotEditorsContainer)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayoutPlotEditors.addWidget(self.label_3, 5, 0, 1, 1)
+
+        self.checkBoxHasHeader = QCheckBox(self.PlotEditorsContainer)
+        self.checkBoxHasHeader.setObjectName(u"checkBoxHasHeader")
+        self.checkBoxHasHeader.setLayoutDirection(Qt.LeftToRight)
+        self.checkBoxHasHeader.setAutoFillBackground(False)
+
+        self.gridLayoutPlotEditors.addWidget(self.checkBoxHasHeader, 5, 1, 1, 1)
+
+        self.label_2 = QLabel(self.PlotEditorsContainer)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayoutPlotEditors.addWidget(self.label_2, 6, 0, 1, 1)
+
+        self.comboBoxDelimiter = QComboBox(self.PlotEditorsContainer)
+        self.comboBoxDelimiter.addItem("")
+        self.comboBoxDelimiter.addItem("")
+        self.comboBoxDelimiter.setObjectName(u"comboBoxDelimiter")
+
+        self.gridLayoutPlotEditors.addWidget(self.comboBoxDelimiter, 6, 1, 1, 1)
+
+        self.pushButtonAnnotateCurrentPlot = QPushButton(self.PlotEditorsContainer)
+        self.pushButtonAnnotateCurrentPlot.setObjectName(u"pushButtonAnnotateCurrentPlot")
+
+        self.gridLayoutPlotEditors.addWidget(self.pushButtonAnnotateCurrentPlot, 7, 1, 1, 1)
+
+
+        self.verticalLayoutPlotEditor.addWidget(self.PlotEditorsContainer)
+
+        self.pushButtonAnnotateAllPlots = QPushButton(self.groupBoxPlots)
+        self.pushButtonAnnotateAllPlots.setObjectName(u"pushButtonAnnotateAllPlots")
+
+        self.verticalLayoutPlotEditor.addWidget(self.pushButtonAnnotateAllPlots)
+
+
+        self.gridLayout2.addLayout(self.verticalLayoutPlotEditor, 0, 6, 1, 1)
+
+        self.treeViewFileBrowser = QTreeView(self.groupBoxPlots)
+        self.treeViewFileBrowser.setObjectName(u"treeViewFileBrowser")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy3.setHorizontalStretch(4)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.treeViewFileBrowser.sizePolicy().hasHeightForWidth())
+        self.treeViewFileBrowser.setSizePolicy(sizePolicy3)
+
+        self.gridLayout2.addWidget(self.treeViewFileBrowser, 0, 0, 1, 1)
+
 
         self.verticalLayout.addWidget(self.groupBoxPlots)
 
@@ -176,9 +243,21 @@ class Ui_PlotAnnotationWidget(object):
         self.groupBox.setTitle(QCoreApplication.translate("PlotAnnotationWidget", u"Manual annotation:", None))
         self.pushButtonApply.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Apply", None))
         self.groupBoxPlots.setTitle(QCoreApplication.translate("PlotAnnotationWidget", u"Plots:", None))
-        self.pushButtonAnnotatePlots.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Annotate Plot Files", None))
         self.pushButtonAddPlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Add>>", None))
         self.pushButtonAddAllPlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Add All>>", None))
         self.pushButtonRemovePlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"<<Remove", None))
+        self.label.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Plot type:", None))
+        self.comboBoxPlotType.setItemText(0, QCoreApplication.translate("PlotAnnotationWidget", u"timeseries", None))
+        self.comboBoxPlotType.setItemText(1, QCoreApplication.translate("PlotAnnotationWidget", u"heatmap", None))
+
+        self.label_5.setText(QCoreApplication.translate("PlotAnnotationWidget", u"x column:", None))
+        self.label_4.setText(QCoreApplication.translate("PlotAnnotationWidget", u"y columns:", None))
+        self.label_3.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Has header:", None))
+        self.label_2.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Delimiter:", None))
+        self.comboBoxDelimiter.setItemText(0, QCoreApplication.translate("PlotAnnotationWidget", u"tab", None))
+        self.comboBoxDelimiter.setItemText(1, QCoreApplication.translate("PlotAnnotationWidget", u"comma", None))
+
+        self.pushButtonAnnotateCurrentPlot.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Annotate This Plot File", None))
+        self.pushButtonAnnotateAllPlots.setText(QCoreApplication.translate("PlotAnnotationWidget", u"Annotate All Plot Files", None))
     # retranslateUi
 

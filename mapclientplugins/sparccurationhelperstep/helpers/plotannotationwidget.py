@@ -10,6 +10,41 @@ from mapclientplugins.sparccurationhelperstep.helpers.ui_plotannotationwidget im
 from mapclientplugins.sparccurationhelperstep.plotannotationsmodel import PlotAnnotationsModelTree
 
 
+def parse_y_columns_input(user_input):
+    y_columns = []
+    for part in user_input.split(','):
+        if '-' in part:
+            start, end = map(int, part.split('-'))
+            y_columns.extend(range(start, end + 1))
+        else:
+            y_columns.append(int(part))
+    return y_columns
+
+
+def format_y_columns(y_columns):
+    if not y_columns:
+        return ""
+
+    indices = sorted(y_columns)
+
+    ranges = []
+    start = indices[0]
+    end = indices[0]
+
+    for index in indices[1:]:
+        if index == end + 1:
+            end = index
+        else:
+            ranges.append((start, end))
+            start = index
+            end = index
+
+    ranges.append((start, end))
+
+    formatted = ",".join(f"{start}-{end}" if start != end else str(start) for start, end in ranges)
+    return formatted
+
+
 class PlotAnnotationWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
@@ -19,20 +54,31 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
 
         self._location = None
         self._plot_list = []
+        self._plot_plot_list = []
+        self._current_plot = None
         self._plot_annotations_model_tree = None
 
         self._make_connections()
 
     def _make_connections(self):
-        self._ui.pushButtonAnnotatePlots.clicked.connect(self._annotate_plots_button_clicked)
+        self._ui.pushButtonAnnotateCurrentPlot.clicked.connect(self._annotate_current_plot_button_clicked)
+        self._ui.pushButtonAnnotateAllPlots.clicked.connect(self._annotate_plots_button_clicked)
         self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
         self._ui.pushButtonAddPlot.clicked.connect(self._add_plot_clicked)
         self._ui.pushButtonAddAllPlot.clicked.connect(self._add_all_plot_clicked)
         self._ui.pushButtonRemovePlot.clicked.connect(self._remove_plot_clicked)
-        self._ui.listViewPlots.model()
+
+        plots_model = _build_list_model(self._plot_list)
+        self._ui.listViewPlots.setModel(plots_model)
+        self._ui.listViewPlots.selectionModel().selectionChanged.connect(self._plot_listView_clicked)
+
+        self._ui.comboBoxPlotType.currentTextChanged.connect(self._plot_type_changed)
+        self._ui.lineEditXColumn.textEdited.connect(self._plot_x_column_edit)
+        self._ui.lineEditYColumns.editingFinished.connect(self._plot_y_columns_edit)
+        self._ui.checkBoxHasHeader.stateChanged.connect(self._plot_has_header_checked)
+        self._ui.comboBoxDelimiter.currentTextChanged.connect(self._delimiter_changed)
 
     def update_annotations(self, location):
-
         self._location = location
         plot_files = plot_annotations.get_all_plots_path()
         thumbnail_files = plot_annotations.get_plot_thumbnails()
@@ -54,19 +100,25 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         self._ui.treeViewPlotAnnotations.setModel(self._plot_annotations_model_tree)
         selection_model = self._ui.treeViewPlotAnnotations.selectionModel()
         selection_model.selectionChanged.connect(self._annotation_selection_changed)
+        self._plot_annotations_model_tree.reset_data(plot_annotations.get_annotated_plot_dictionary())
 
         fileBrowserModel = QtWidgets.QFileSystemModel()
         fileBrowserModel.setRootPath(QtCore.QDir.rootPath())
         self._ui.treeViewFileBrowser.setModel(fileBrowserModel)
         self._ui.treeViewFileBrowser.setRootIndex(fileBrowserModel.index(self._location))
 
-        self._update_ui()
-
-    def _update_ui(self):
-        # Force refresh
-        self._plot_annotations_model_tree.reset_data(plot_annotations.get_annotated_plot_dictionary())
-        plots_model = _build_list_model(self._plot_list)
-        self._ui.listViewPlots.setModel(plots_model)
+    def _update_plot_ui(self):
+        index = self._ui.listViewPlots.currentIndex()
+        self._current_plot = self._plot_plot_list[index.row()]
+        if self._current_plot:
+            self._ui.PlotEditorsContainer.setEnabled(True)
+            self._ui.comboBoxPlotType.setCurrentText(self._current_plot.plot_type)
+            self._ui.lineEditXColumn.setText(str(self._current_plot.x_axis_column))
+            self._ui.lineEditYColumns.setText(format_y_columns(self._current_plot.y_axes_columns))
+            self._ui.checkBoxHasHeader.setChecked(self._current_plot.has_header())
+            self._ui.comboBoxDelimiter.setCurrentText(self._current_plot.delimiter)
+        else:
+            self._ui.PlotEditorsContainer.setEnabled(False)
 
     def _annotation_selection_changed(self):
         indexes = [self._ui.treeViewPlotAnnotations.currentIndex()]
@@ -84,14 +136,28 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         index = self._ui.treeViewFileBrowser.currentIndex()
         filePath = os.path.normpath(self._ui.treeViewFileBrowser.model().filePath(index))
 
-        # Add the selected file to the plot list view
-        if filePath not in self._plot_list:
-            self._plot_list.append(filePath)
-        self._update_ui()
+        if filePath in self._plot_list:
+            currentIndex = self._ui.listViewPlots.model().index(self._plot_list.index(filePath), 0)
+            self._ui.listViewPlots.setFocus()
+            self._ui.listViewPlots.setCurrentIndex(currentIndex)
+        else:
+            # Add the selected file to the plot list view
+            plot = plot_annotations.get_plot_from_path(filePath)
+            if not plot:
+                QtWidgets.QMessageBox.critical(self, "Error", f"{filePath} is not a valid plot file.")
+            else:
+                self._plot_list.append(filePath)
+                self._plot_plot_list.append(plot)
+                item = QtGui.QStandardItem(str(filePath))
+                item.setEditable(False)
+                self._ui.listViewPlots.model().appendRow(item)
+        self._update_plot_ui()
 
     def _add_all_plot_clicked(self):
-        self._plot_list = plot_annotations.get_all_plots_path()
-        self._update_ui()
+        self._plot_list, self._plot_plot_list = plot_annotations.get_all_plots()
+        plots_model = _build_list_model(self._plot_list)
+        self._ui.listViewPlots.setModel(plots_model)
+        self._ui.listViewPlots.selectionModel().selectionChanged.connect(self._plot_listView_clicked)
 
     def _remove_plot_clicked(self):
         # Remove the selected file to the plot list view
@@ -100,7 +166,32 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         if item:
             selected_plot = self._ui.listViewPlots.model().itemFromIndex(index).text()
             self._plot_list.remove(selected_plot)
-            self._update_ui()
+            self._plot_plot_list.pop(index.row())
+            self._ui.listViewPlots.model().removeRows(index.row(), 1)
+            self._update_plot_ui()
+
+    def _plot_type_changed(self, plot_type):
+        index = self._ui.listViewPlots.currentIndex()
+        self._plot_plot_list[index.row()].plot_type = plot_type
+
+    def _plot_x_column_edit(self):
+        index = self._ui.listViewPlots.currentIndex()
+        self._plot_plot_list[index.row()].x_axis_column = int(self._ui.lineEditXColumn.text())
+
+    def _plot_y_columns_edit(self):
+        index = self._ui.listViewPlots.currentIndex()
+        self._plot_plot_list[index.row()].set_y_columns(parse_y_columns_input(self._ui.lineEditYColumns.text()))
+
+    def _plot_has_header_checked(self, checked):
+        index = self._ui.listViewPlots.currentIndex()
+        self._plot_plot_list[index.row()].set_has_header(checked)
+
+    def _delimiter_changed(self, delimiter):
+        index = self._ui.listViewPlots.currentIndex()
+        self._plot_plot_list[index.row()].delimiter = delimiter
+
+    def _plot_listView_clicked(self, selected, deselected):
+        self._update_plot_ui()
 
     def _apply_button_clicked(self):
         subject_text = self._ui.comboBoxAnnotationSubject.currentText()
@@ -120,18 +211,26 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
             append = True
 
         plot_annotations.update_column_content(subject_text, predicate_text, object_value, append)
-        self._update_ui()
+        self._plot_annotations_model_tree.reset_data(plot_annotations.get_annotated_plot_dictionary())
 
     def _prepare_progress_dialog(self, label_text, button_text, total):
         progress = QtWidgets.QProgressDialog(label_text, button_text, 0, total, self)
         progress.setWindowModality(QtCore.Qt.WindowModality.WindowModal)
         return progress
 
+    def _annotate_current_plot_button_clicked(self):
+        try:
+            plot_annotations.annotate_one_plot(self._current_plot)
+        except AnnotationDirectoryNoWriteAccess:
+            QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
+
+        self._plot_annotations_model_tree.reset_data(plot_annotations.get_annotated_plot_dictionary())
+
     def _annotate_plots_button_clicked(self):
         self._progress_dialog = self._prepare_progress_dialog("Annotate plot files", "Cancel", len(self._plot_list))
         count = 0
         try:
-            for plot in self._plot_list:
+            for plot in self._plot_plot_list:
                 plot_annotations.annotate_one_plot(plot)
                 count += 1
                 self._progress_dialog.setValue(count)
@@ -140,19 +239,13 @@ class PlotAnnotationWidget(QtWidgets.QWidget):
         except AnnotationDirectoryNoWriteAccess:
             QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
 
-        self._update_ui()
+        self._plot_annotations_model_tree.reset_data(plot_annotations.get_annotated_plot_dictionary())
 
 
 def _build_list_model(annotation_items):
     model = QtGui.QStandardItemModel()
     for i in annotation_items:
-        # if isinstance(i, PlotAnnotation):
-        #     item = QtGui.QStandardItem(i.get_filename())
-        # else:
         item = QtGui.QStandardItem(str(i))
-
-        item.setData(i, QtCore.Qt.UserRole)
         item.setEditable(False)
         model.appendRow(item)
-
     return model
