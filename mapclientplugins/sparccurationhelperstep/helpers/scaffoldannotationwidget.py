@@ -17,6 +17,7 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonFixError.setEnabled(False)
 
         self._location = None
+        self._current_error = None
 
         self._scaffold_annotations_model_tree = None
 
@@ -89,8 +90,8 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         model = model_index.model()
         item = model.itemFromIndex(model_index)
         error = item.data()
-        if error != self._currentError:
-            self._currentError = error
+        if error != self._current_error:
+            self._current_error = error
 
     def _fix_error(self, error):
         success = False

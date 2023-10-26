@@ -35,7 +35,7 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
         webbrowser.open("https://abi-mapping-tools.readthedocs.io/en/latest/mapclientplugins.sparccurationhelperstep/docs/index.html")
 
     def _done_button_clicked(self):
-        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
         self._ui.tabContextAnnotation.write_context_annotation()
         self._callback()
         QtWidgets.QApplication.restoreOverrideCursor()

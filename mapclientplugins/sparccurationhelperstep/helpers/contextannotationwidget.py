@@ -105,8 +105,10 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         # Basis of the interface relies on the context info list being the same size as the metadata files list.
         assert len(self._context_info_list) == len(metadata_files)
 
+        self._ui.comboBoxBanner.blockSignals(True)
         self._ui.comboBoxBanner.setModel(thumbnail_list_model)
-        if self._current_index:
+        self._ui.comboBoxBanner.blockSignals(False)
+        if self._current_index != -1:
             self._populate_ui(self._context_info_list[self._current_index])
 
         # Find annotation file.
@@ -128,6 +130,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
     def _populate_ui(self, data):
         self.clean_ui()
         self._ui.lineEditSummaryHeading.setText(data.get_heading())
+        banner_index = self._ui.comboBoxBanner.findText(self._from_partial_path(data.get_banner()))
+        if banner_index > -1:
+            self._ui.comboBoxBanner.blockSignals(True)
+            self._ui.comboBoxBanner.setCurrentIndex(banner_index)
+            self._ui.comboBoxBanner.blockSignals(False)
         self._ui.plainTextEditSummaryDescription.setPlainText(data.get_description())
         for view in data.get_views():
             self._create_view(view["id"])
@@ -205,6 +212,9 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def to_serialisable_path(self, path):
         return pathlib.PureWindowsPath(os.path.relpath(path, self._location)).as_posix() if path else ""
+
+    def _from_partial_path(self, partial):
+        return pathlib.PureWindowsPath(os.path.join(self._location, partial)).as_posix()
 
     def _on_banner_changed(self, current_text):
         self._context_info_list[self._current_index].update({
