@@ -15,7 +15,7 @@ from mapclientplugins.sparccurationhelperstep.helpers.viewswidget import ViewsWi
 
 import sparc.curation.tools.context_annotations as context_annotations
 from sparc.curation.tools.models.contextinfo import ContextInfoAnnotation
-from sparc.curation.tools.helpers.file_helper import is_annotation_csv_file, OnDiskFiles
+from sparc.curation.tools.helpers.file_helper import is_annotation_csv_file, OnDiskFiles, search_for_context_data_files
 
 
 class ContextAnnotationWidget(QtWidgets.QWidget):
@@ -49,7 +49,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         thumbnail_list_model = _build_list_model(thumbnail_files)
 
-        context_files = context_annotations.search_for_context_data_files(location, convert_to_bytes("2MiB"))
+        context_files = search_for_context_data_files(location, convert_to_bytes("2MiB"))
         # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
         for context_file in context_files:
             with open(context_file, encoding='utf-8') as f:
@@ -168,6 +168,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self.update_current_context_info()
         for context_info in self._context_info_list:
             context_annotations.update_context_info(context_info)
+            context_annotations.annotate_context_info(context_info)
 
     def _open_annotation_map_file(self):
         _is_annotation_csv_file = False
