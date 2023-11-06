@@ -1,15 +1,11 @@
 
 from PySide6 import QtWidgets, QtGui, QtCore
-from sparc.curation.tools.annotations.scaffold import ScaffoldAnnotation
 from sparc.curation.tools.definitions import DERIVED_FROM_COLUMN, SOURCE_OF_COLUMN, FILE_LOCATION_COLUMN
 from sparc.curation.tools.errors import ScaffoldAnnotationError, AnnotationDirectoryNoWriteAccess
 
-from sparc.curation.tools.manifests import ManifestDataFrame
-from sparc.curation.tools.ondisk import OnDiskFiles
-from sparc.curation.tools.scaffold_annotations import get_errors, fix_error, get_confirmation_message
-
 from mapclientplugins.sparccurationhelperstep.helpers.ui_scaffoldannotationwidget import Ui_ScaffoldAnnotationWidget
 from mapclientplugins.sparccurationhelperstep.scaffoldannotationsmodel import ScaffoldAnnotationsModelTree
+import sparc.curation.tools.scaffold_annotations as scaffold_annotations
 
 
 class ScaffoldAnnotationWidget(QtWidgets.QWidget):
@@ -20,8 +16,8 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         self._ui.setupUi(self)
         self._ui.pushButtonFixError.setEnabled(False)
 
-        self._manifest_dataframe = None
         self._location = None
+        self._current_error = None
 
         self._scaffold_annotations_model_tree = None
 
@@ -33,13 +29,13 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         self._ui.pushButtonApply.clicked.connect(self._apply_button_clicked)
         self._ui.comboBoxSAnnotationPredicate.currentTextChanged.connect(self._annotation_predicate_changed)
         self._ui.listViewErrors.model()
-        # self._ui.treeViewScaffoldAnnotations.clicked.connect(self._scaffold_annotation_clicked)
 
     def update_annotations(self, location):
         self._location = location
-        metadata_files = OnDiskFiles().get_scaffold_data().get_metadata_files()
-        view_files = OnDiskFiles().get_scaffold_data().get_view_files()
-        thumbnail_files = OnDiskFiles().get_scaffold_data().get_thumbnail_files()
+
+        metadata_files = scaffold_annotations.get_on_disk_metadata_files()
+        view_files = scaffold_annotations.get_on_disk_view_files()
+        thumbnail_files = scaffold_annotations.get_on_disk_thumbnail_files()
 
         subject_list = [*metadata_files, *view_files, *thumbnail_files]
         subject_model = _build_list_model(subject_list)
@@ -55,7 +51,6 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         self._ui.comboBoxAnnotationObject.setModel(object_model)
         self._ui.comboBoxSAnnotationPredicate.setModel(predicate_model)
 
-        self._reset_dataframe()
         self._scaffold_annotations_model_tree = ScaffoldAnnotationsModelTree(location)
         self._ui.treeViewScaffoldAnnotations.setModel(self._scaffold_annotations_model_tree)
         selection_model = self._ui.treeViewScaffoldAnnotations.selectionModel()
@@ -63,14 +58,11 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
         self._update_ui()
 
-    def _reset_dataframe(self):
-        self._manifest_dataframe = ManifestDataFrame().setup_dataframe(self._location)
-
     def _update_ui(self):
         # Force refresh
-        self._scaffold_annotations_model_tree.reset_data(self._manifest_dataframe.get_scaffold_data())
+        self._scaffold_annotations_model_tree.reset_data(scaffold_annotations.get_annotated_scaffold_dictionary())
 
-        self._errors = get_errors()
+        self._errors = scaffold_annotations.get_errors()
         errors_model = _build_list_model(self._errors)
         self._ui.pushButtonFixAllErrors.setEnabled(errors_model.rowCount())
         self._ui.listViewErrors.setModel(errors_model)
@@ -98,13 +90,13 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         model = model_index.model()
         item = model.itemFromIndex(model_index)
         error = item.data()
-        if error != self._currentError:
-            self._currentError = error
+        if error != self._current_error:
+            self._current_error = error
 
     def _fix_error(self, error):
         success = False
         try:
-            fix_error(error)
+            scaffold_annotations.fix_error(error)
             success = True
         except AnnotationDirectoryNoWriteAccess:
             QtWidgets.QMessageBox.critical(self, "Error", "No write access to directory.")
@@ -120,8 +112,8 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         predicate_text = self._ui.comboBoxSAnnotationPredicate.currentText()
 
         if object_text != "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
-            result = self._manifest_dataframe.get_matching_entry(FILE_LOCATION_COLUMN, object_text)
-            object_value = result[0]
+            result = scaffold_annotations.get_filename_by_location(object_text)
+            object_value = result[0] if result else ""
         elif object_text == "--" and (predicate_text == DERIVED_FROM_COLUMN or predicate_text == SOURCE_OF_COLUMN):
             object_value = ""
         else:
@@ -131,29 +123,26 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         if object_value and predicate_text == SOURCE_OF_COLUMN:
             append = self._ui.checkBoxAnnotationMode.isChecked()
 
-        self._manifest_dataframe.update_column_content(subject_text, predicate_text, object_value, append)
-        self._reset_dataframe()
+        scaffold_annotations.update_column_content(subject_text, predicate_text, object_value, append)
         self._update_ui()
 
     def _fix_error_button_clicked(self):
         index = self._ui.listViewErrors.currentIndex()
         current_error = self._ui.listViewErrors.model().data(index, QtCore.Qt.UserRole)
-        confirmationMessage = get_confirmation_message(current_error)
+        confirmationMessage = scaffold_annotations.get_confirmation_message(current_error)
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
             self._fix_error(current_error)
-            self._reset_dataframe()
             self._update_ui()
 
     def _fix_all_errors_button_clicked(self):
-        confirmationMessage = get_confirmation_message()
+        confirmationMessage = scaffold_annotations.get_confirmation_message()
         result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
         if result == QtWidgets.QMessageBox.Yes:
             for e in self._errors:
                 if not self._fix_error(e):
                     break
 
-            self._reset_dataframe()
             self._update_ui()
 
 
@@ -162,8 +151,8 @@ def _build_list_model(annotation_items):
     for i in annotation_items:
         if isinstance(i, ScaffoldAnnotationError):
             item = QtGui.QStandardItem(i.get_error_message()[7:])
-        elif isinstance(i, ScaffoldAnnotation):
-            item = QtGui.QStandardItem(i.get_filename())
+        # elif isinstance(i, ScaffoldAnnotation):
+        #     item = QtGui.QStandardItem(i.get_filename())
         else:
             item = QtGui.QStandardItem(str(i))
 

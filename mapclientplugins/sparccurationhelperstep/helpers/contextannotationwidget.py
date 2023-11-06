@@ -14,8 +14,8 @@ from mapclientplugins.sparccurationhelperstep.helpers.sampleswidget import Sampl
 from mapclientplugins.sparccurationhelperstep.helpers.viewswidget import ViewsWidget
 
 import sparc.curation.tools.context_annotations as context_annotations
-from sparc.curation.tools.contextinfo import ContextInfoAnnotation
-from sparc.curation.tools.ondisk import is_annotation_csv_file, OnDiskFiles
+from sparc.curation.tools.models.contextinfo import ContextInfoAnnotation
+from sparc.curation.tools.helpers.file_helper import is_annotation_csv_file, OnDiskFiles, search_for_context_data_files
 
 
 class ContextAnnotationWidget(QtWidgets.QWidget):
@@ -36,7 +36,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def update_info(self, location):
         self._location = location
-        metadata_files = OnDiskFiles().get_scaffold_data().get_metadata_files()
+        metadata_files = OnDiskFiles().get_metadata_files()
         metadata_list = [*metadata_files]
 
         metadata_list_model = _build_list_model(metadata_list)
@@ -45,14 +45,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._current_index = 0
         self._ui.comboBoxContextMetadata.blockSignals(False)
 
-        potential_thumbnails = list(pathlib.Path(self._location).rglob("*.png"))
-        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpeg"))
-        potential_thumbnails += list(pathlib.Path(self._location).rglob("*.jpg"))
-        thumbnail_files = list(set(potential_thumbnails))
+        thumbnail_files = OnDiskFiles().get_all_image_files()
 
         thumbnail_list_model = _build_list_model(thumbnail_files)
 
-        context_files = context_annotations.search_for_context_data_files(location, convert_to_bytes("2MiB"))
+        context_files = search_for_context_data_files(location, convert_to_bytes("2MiB"))
         # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
         for context_file in context_files:
             with open(context_file, encoding='utf-8') as f:
@@ -108,8 +105,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         # Basis of the interface relies on the context info list being the same size as the metadata files list.
         assert len(self._context_info_list) == len(metadata_files)
 
+        self._ui.comboBoxBanner.blockSignals(True)
         self._ui.comboBoxBanner.setModel(thumbnail_list_model)
-        self._populate_ui(self._context_info_list[self._current_index])
+        self._ui.comboBoxBanner.blockSignals(False)
+        if self._current_index != -1:
+            self._populate_ui(self._context_info_list[self._current_index])
 
         # Find annotation file.
         annotation_files = context_annotations.search_for_annotation_csv_files(location, convert_to_bytes("2MiB"))
@@ -130,6 +130,11 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
     def _populate_ui(self, data):
         self.clean_ui()
         self._ui.lineEditSummaryHeading.setText(data.get_heading())
+        banner_index = self._ui.comboBoxBanner.findText(self._from_partial_path(data.get_banner()))
+        if banner_index > -1:
+            self._ui.comboBoxBanner.blockSignals(True)
+            self._ui.comboBoxBanner.setCurrentIndex(banner_index)
+            self._ui.comboBoxBanner.blockSignals(False)
         self._ui.plainTextEditSummaryDescription.setPlainText(data.get_description())
         for view in data.get_views():
             self._create_view(view["id"])
@@ -163,6 +168,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self.update_current_context_info()
         for context_info in self._context_info_list:
             context_annotations.update_context_info(context_info)
+            context_annotations.annotate_context_info(context_info)
 
     def _open_annotation_map_file(self):
         _is_annotation_csv_file = False
@@ -207,6 +213,9 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
     def to_serialisable_path(self, path):
         return pathlib.PureWindowsPath(os.path.relpath(path, self._location)).as_posix() if path else ""
+
+    def _from_partial_path(self, partial):
+        return pathlib.PureWindowsPath(os.path.join(self._location, partial)).as_posix()
 
     def _on_banner_changed(self, current_text):
         self._context_info_list[self._current_index].update({

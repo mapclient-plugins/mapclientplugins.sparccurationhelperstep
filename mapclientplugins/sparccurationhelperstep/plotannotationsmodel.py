@@ -1,84 +1,36 @@
-import os.path
+import os
 
 from PySide6 import QtCore
 
-_HEADER = 'Annotations'
+from mapclientplugins.sparccurationhelperstep.scaffoldannotationsmodel import ScaffoldAnnotationItem
+
+_HEADERS = 'Annotations'
 
 
-class ScaffoldAnnotationItem(object):
-    def __init__(self, location, display):
-        self._children = []
-        self._location = location
-        self._display = display
-        self._parent_item = None
-
-    def set_parent(self, parent_item):
-        self._parent_item = parent_item
-
-    def append_child(self, child):
-        self._children.append(child)
-        child.set_parent(self)
-
-    def index_of(self, item):
-        return self._children.index(item)
-
-    def child(self, row):
-        if 0 <= row < len(self._children):
-            return self._children[row]
-
-        return None
-
-    def child_count(self):
-        return len(self._children)
-
-    def column_count(self):
-        return 1
-
-    def data(self, column, role):
-        if column == 0:
-            if role == QtCore.Qt.DisplayRole:
-                return self._display
-            elif role == QtCore.Qt.UserRole:
-                return self._location
-
-        return None
-
-    def row(self):
-
-        if self._parent_item is not None:
-            return self._parent_item.index_of(self)
-
-        return 0
-
-    def parent_item(self):
-        return self._parent_item
-
-
-class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
+class PlotAnnotationsModelTree(QtCore.QAbstractItemModel):
     def __init__(self, common_path, parent=None):
-        super(ScaffoldAnnotationsModelTree, self).__init__(parent)
+        super(PlotAnnotationsModelTree, self).__init__(parent)
         self._root_item = None
         self._common_path = common_path
 
         self.reset_internal_data()
 
     def reset_internal_data(self):
-        self._root_item = ScaffoldAnnotationItem('', _HEADER)
+        self._root_item = ScaffoldAnnotationItem('', _HEADERS)
 
-    def reset_data(self, annotated_scaffold_dictionary):
+    def reset_data(self, annotated_plot_dictionary):
         self.beginResetModel()
         self.reset_internal_data()
-        for metadata, views in annotated_scaffold_dictionary.items():
-            item = ScaffoldAnnotationItem(metadata, os.path.relpath(metadata, self._common_path))
+        for plot, thumbnails in annotated_plot_dictionary.items():
+            item = ScaffoldAnnotationItem(plot, os.path.relpath(plot, self._common_path))
             self._root_item.append_child(item)
-            for view, thumbnail_filenames in views.items():
-                view_item = ScaffoldAnnotationItem(view, os.path.relpath(view, self._common_path))
-                item.append_child(view_item)
-                for thumbnail in thumbnail_filenames:
-                    thumbnail_item = ScaffoldAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
-                    view_item.append_child(thumbnail_item)
-
+            for thumbnail in thumbnails:
+                thumbnail_item = ScaffoldAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
+                item.append_child(thumbnail_item)
         self.endResetModel()
+
+    def _get_item_from_index(self, index):
+        return self._data[index.row()]
 
     def rowCount(self, parent):
         if parent.column() > 0:

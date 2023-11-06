@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (QApplication, QHBoxLayout, QPushButton, QSizePoli
 
 from mapclientplugins.sparccurationhelperstep.helpers.contextannotationwidget import ContextAnnotationWidget
 from mapclientplugins.sparccurationhelperstep.helpers.scaffoldannotationwidget import ScaffoldAnnotationWidget
+from mapclientplugins.sparccurationhelperstep.helpers.plotannotationwidget import PlotAnnotationWidget
 
 class Ui_SparcCurationHelperWidget(object):
     def setupUi(self, SparcCurationHelperWidget):
@@ -33,7 +34,7 @@ class Ui_SparcCurationHelperWidget(object):
         self.tabScaffoldAnnotation = ScaffoldAnnotationWidget()
         self.tabScaffoldAnnotation.setObjectName(u"tabScaffoldAnnotation")
         self.tabWidget.addTab(self.tabScaffoldAnnotation, "")
-        self.tabPlotAnnotation = QWidget()
+        self.tabPlotAnnotation = PlotAnnotationWidget()
         self.tabPlotAnnotation.setObjectName(u"tabPlotAnnotation")
         self.tabWidget.addTab(self.tabPlotAnnotation, "")
         self.tabContextAnnotation = ContextAnnotationWidget()
