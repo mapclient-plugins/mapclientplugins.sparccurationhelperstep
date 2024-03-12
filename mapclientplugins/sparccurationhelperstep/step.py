@@ -49,12 +49,14 @@ class SparcCurationHelperStep(WorkflowStepMountPoint):
         """
         # Put your execute step code here before calling the '_doneExecution' method.
         # self._model = SparcCurationHelperWidget(self._portData0, self._location, self._config['identifier'])
-        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self._view = SparcCurationHelperWidget()
-        self._view.register_done_execution(self._doneExecution)
-        self._view.set_dataset_location(self._port0_inputFileDir)
-        self._setCurrentWidget(self._view)
-        QtWidgets.QApplication.restoreOverrideCursor()
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
+        try:
+            self._view = SparcCurationHelperWidget()
+            self._view.register_done_execution(self._doneExecution)
+            self._view.set_dataset_location(self._port0_inputFileDir)
+            self._setCurrentWidget(self._view)
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
 
     def setPortData(self, index, dataIn):
         """
