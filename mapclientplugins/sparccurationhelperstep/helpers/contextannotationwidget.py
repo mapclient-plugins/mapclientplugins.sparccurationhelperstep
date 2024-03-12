@@ -49,7 +49,7 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
 
         thumbnail_list_model = _build_list_model(thumbnail_files)
 
-        context_files = context_annotations.search_for_context_data_files(location, convert_to_bytes("2MiB"))
+        context_files = context_annotations.search_for_annotation_csv_files(location, convert_to_bytes("2MiB"))
         # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
         for context_file in context_files:
             with open(context_file, encoding='utf-8') as f:
