@@ -42,7 +42,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         metadata_list_model = _build_list_model(metadata_list)
         self._ui.comboBoxContextMetadata.blockSignals(True)
         self._ui.comboBoxContextMetadata.setModel(metadata_list_model)
-        self._current_index = 0
+        if metadata_list_model.rowCount():
+            self._current_index = 0
         self._ui.comboBoxContextMetadata.blockSignals(False)
 
         thumbnail_files = OnDiskFiles().get_all_image_files()
@@ -354,7 +355,7 @@ def _build_list_model(annotation_items):
     model = QtGui.QStandardItemModel()
     for i in annotation_items:
         item = QtGui.QStandardItem(str(i))
-        item.setData(i, QtCore.Qt.UserRole)
+        item.setData(i, QtCore.Qt.ItemDataRole.UserRole)
         item.setEditable(False)
         model.appendRow(item)
     return model
