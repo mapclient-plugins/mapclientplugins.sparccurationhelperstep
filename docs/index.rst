@@ -1,5 +1,5 @@
-MAP Client Plugin - SPARC Curation Helper
-=========================================
+SPARC Curation Helper
+=====================
 
 The **SPARC Curation Helper** is a MAP Client plugin for curating SPARC datasets.
 
