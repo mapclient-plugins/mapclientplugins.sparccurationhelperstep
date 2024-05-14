@@ -1,6 +1,6 @@
 
 from PySide6 import QtWidgets, QtGui, QtCore
-from sparc.curation.tools.definitions import DERIVED_FROM_COLUMN, SOURCE_OF_COLUMN, FILE_LOCATION_COLUMN
+from sparc.curation.tools.definitions import DERIVED_FROM_COLUMN, SOURCE_OF_COLUMN
 from sparc.curation.tools.errors import ScaffoldAnnotationError, AnnotationDirectoryNoWriteAccess
 
 from mapclientplugins.sparccurationhelperstep.helpers.ui_scaffoldannotationwidget import Ui_ScaffoldAnnotationWidget
@@ -76,10 +76,13 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
         indexes = self._ui.treeViewScaffoldAnnotations.selectedIndexes()
         if len(indexes) == 1:
             selection = indexes[0]
-            thumbnail_file = self._scaffold_annotations_model_tree.data(selection, QtCore.Qt.UserRole)
+            thumbnail_file = self._scaffold_annotations_model_tree.data(selection, QtCore.Qt.ItemDataRole.UserRole)
             pixmap = QtGui.QPixmap(thumbnail_file)
-            pixmap = pixmap.scaled(256, 256, QtCore.Qt.KeepAspectRatio)
-            self._ui.labelThumbnailPreview.setPixmap(pixmap)
+            if pixmap:
+                pixmap = pixmap.scaled(256, 256, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+                self._ui.labelThumbnailPreview.setPixmap(pixmap)
+            else:
+                self._ui.labelThumbnailPreview.clear()
         else:
             self._ui.labelThumbnailPreview.clear()
 
@@ -128,17 +131,17 @@ class ScaffoldAnnotationWidget(QtWidgets.QWidget):
 
     def _fix_error_button_clicked(self):
         index = self._ui.listViewErrors.currentIndex()
-        current_error = self._ui.listViewErrors.model().data(index, QtCore.Qt.UserRole)
+        current_error = self._ui.listViewErrors.model().data(index, QtCore.Qt.ItemDataRole.UserRole)
         confirmationMessage = scaffold_annotations.get_confirmation_message(current_error)
-        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if result == QtWidgets.QMessageBox.Yes:
+        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        if result == QtWidgets.QMessageBox.StandardButton.Yes:
             self._fix_error(current_error)
             self._update_ui()
 
     def _fix_all_errors_button_clicked(self):
         confirmationMessage = scaffold_annotations.get_confirmation_message()
-        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if result == QtWidgets.QMessageBox.Yes:
+        result = QtWidgets.QMessageBox.question(self, "Confirmation", confirmationMessage, QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        if result == QtWidgets.QMessageBox.StandardButton.Yes:
             for e in self._errors:
                 if not self._fix_error(e):
                     break
@@ -156,7 +159,7 @@ def _build_list_model(annotation_items):
         else:
             item = QtGui.QStandardItem(str(i))
 
-        item.setData(i, QtCore.Qt.UserRole)
+        item.setData(i, QtCore.Qt.ItemDataRole.UserRole)
         item.setEditable(False)
         model.appendRow(item)
 

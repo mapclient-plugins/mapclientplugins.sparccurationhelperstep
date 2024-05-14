@@ -5,7 +5,7 @@ from PySide6 import QtCore
 _HEADER = 'Annotations'
 
 
-class ScaffoldAnnotationItem(object):
+class ScaffoldAnnotationItem:
     def __init__(self, location, display):
         self._children = []
         self._location = location
@@ -31,14 +31,15 @@ class ScaffoldAnnotationItem(object):
     def child_count(self):
         return len(self._children)
 
-    def column_count(self):
+    @staticmethod
+    def column_count():
         return 1
 
     def data(self, column, role):
         if column == 0:
-            if role == QtCore.Qt.DisplayRole:
+            if role == QtCore.Qt.ItemDataRole.DisplayRole:
                 return self._display
-            elif role == QtCore.Qt.UserRole:
+            elif role == QtCore.Qt.ItemDataRole.UserRole:
                 return self._location
 
         return None
@@ -71,12 +72,12 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
         for metadata, views in annotated_scaffold_dictionary.items():
             item = ScaffoldAnnotationItem(metadata, os.path.relpath(metadata, self._common_path))
             self._root_item.append_child(item)
-            for view, thumbnail_filenames in views.items():
+            for view, view_children in views.items():
                 view_item = ScaffoldAnnotationItem(view, os.path.relpath(view, self._common_path))
                 item.append_child(view_item)
-                for thumbnail in thumbnail_filenames:
-                    thumbnail_item = ScaffoldAnnotationItem(thumbnail, os.path.relpath(thumbnail, self._common_path))
-                    view_item.append_child(thumbnail_item)
+                for entry in view_children:
+                    view_child_item = ScaffoldAnnotationItem(entry, os.path.relpath(entry, self._common_path))
+                    view_item.append_child(view_child_item)
 
         self.endResetModel()
 
@@ -97,7 +98,7 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
 
         return self._root_item.column_count()
 
-    def data(self, index, role=QtCore.Qt.DisplayRole):
+    def data(self, index, role=QtCore.Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return None
 
@@ -105,7 +106,7 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
 
         return item.data(index.column(), role)
 
-    def index(self, row, column, parent):
+    def index(self, row, column, parent=None):
         if not self.hasIndex(row, column, parent):
             return QtCore.QModelIndex()
 
@@ -138,14 +139,14 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
             if parent_index.isValid():
                 grandparent_index = self.parent(parent_index)
                 if grandparent_index.isValid():
-                    return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-            return QtCore.Qt.ItemIsEnabled
+                    return QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
+            return QtCore.Qt.ItemFlag.ItemIsEnabled
 
-        return QtCore.Qt.NoItemFlags
+        return QtCore.Qt.ItemFlag.NoItemFlags
 
     def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:
-            if orientation == QtCore.Qt.Horizontal:
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:
+            if orientation == QtCore.Qt.Orientation.Horizontal:
                 return self._root_item.data(section, role)
 
         return None

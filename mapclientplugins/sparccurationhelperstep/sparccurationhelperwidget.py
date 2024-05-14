@@ -36,6 +36,8 @@ class SparcCurationHelperWidget(QtWidgets.QWidget):
 
     def _done_button_clicked(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.CursorShape.WaitCursor)
-        self._ui.tabContextAnnotation.write_context_annotation()
-        self._callback()
-        QtWidgets.QApplication.restoreOverrideCursor()
+        try:
+            self._ui.tabContextAnnotation.write_context_annotation()
+            self._callback()
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
