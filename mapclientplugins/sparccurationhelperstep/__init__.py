@@ -3,7 +3,7 @@
 MAP Client Plugin
 """
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 __author__ = 'Kay Wang'
 __stepname__ = 'Sparc Curation Helper'
 __location__ = 'https://github.com/mapclient-plugins/mapclientplugins.sparccurationhelperstep'
