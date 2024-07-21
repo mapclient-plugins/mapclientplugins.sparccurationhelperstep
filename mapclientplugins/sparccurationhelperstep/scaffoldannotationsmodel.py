@@ -144,7 +144,7 @@ class ScaffoldAnnotationsModelTree(QtCore.QAbstractItemModel):
 
         return QtCore.Qt.ItemFlag.NoItemFlags
 
-    def headerData(self, section, orientation, role):
+    def headerData(self, section, orientation, role=QtCore.Qt.ItemDataRole.DisplayRole):
         if role == QtCore.Qt.ItemDataRole.DisplayRole:
             if orientation == QtCore.Qt.Orientation.Horizontal:
                 return self._root_item.data(section, role)
