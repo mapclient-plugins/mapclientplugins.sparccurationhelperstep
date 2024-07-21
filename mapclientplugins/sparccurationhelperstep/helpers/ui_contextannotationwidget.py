@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'contextannotationwidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.0
+## Created by: Qt User Interface Compiler version 6.5.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -69,7 +69,7 @@ class Ui_ContextAnnotationWidget(object):
 
         self.tabWidget = QTabWidget(ContextAnnotationWidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setTabPosition(QTabWidget.North)
+        self.tabWidget.setTabPosition(QTabWidget.TabPosition.North)
         self.tabSummary = QWidget()
         self.tabSummary.setObjectName(u"tabSummary")
         self.gridLayout = QGridLayout(self.tabSummary)
@@ -173,7 +173,7 @@ class Ui_ContextAnnotationWidget(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.verticalLayout.addItem(self.verticalSpacer)
 
@@ -190,7 +190,7 @@ class Ui_ContextAnnotationWidget(object):
         ContextAnnotationWidget.setWindowTitle(QCoreApplication.translate("ContextAnnotationWidget", u"ContextAnnotationWidget", None))
         self.label.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Scaffold annotation map file:", None))
         self.pushButtonAnnotationMapFile.setText(QCoreApplication.translate("ContextAnnotationWidget", u"...", None))
-        self.labelContextMetadata.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Matadata file for context:", None))
+        self.labelContextMetadata.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Metadata file for context:", None))
         self.labelSummaryHeading.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Heading:", None))
         self.labelSummaryBanner.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Banner:", None))
         self.labelSummaryDescription.setText(QCoreApplication.translate("ContextAnnotationWidget", u"Description:", None))
