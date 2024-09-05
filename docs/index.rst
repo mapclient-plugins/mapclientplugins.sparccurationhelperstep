@@ -71,7 +71,7 @@ Scaffold Annotation
 With regard to the Scaffold Annotation tab, there are three main sections:
 
 1. first is the Scaffold annotations section that reports on the currently available scaffold annotations,
-2. the second section is the Manual annotation section which helps to manually annotate the metadata files, view files, and the thumbnail files (note that it’s only for annotating with the isDerivedFrom and isSourceOf predicates),
+2. the second section is the Manual annotation section which helps to manually annotate the metadata files, view files, and the thumbnail files (note that it’s only for annotating with the IsDerivedFrom and IsSourceOf predicates),
 3. and the third section named Errors is where error reporting is shown and where errors can be fixed.
 
 .. _fig-mcp-sparc-curation-helper-initial-interface-dialog:
