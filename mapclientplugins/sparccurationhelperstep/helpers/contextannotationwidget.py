@@ -38,8 +38,9 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._location = location
         metadata_files = OnDiskFiles().get_metadata_files()
         metadata_list = [*metadata_files]
+        posix_metadata_list = [pathlib.PureWindowsPath(f).as_posix() for f in metadata_list]
 
-        metadata_list_model = _build_list_model(metadata_list)
+        metadata_list_model = _build_list_model(posix_metadata_list)
         self._ui.comboBoxContextMetadata.blockSignals(True)
         self._ui.comboBoxContextMetadata.setModel(metadata_list_model)
         if metadata_list_model.rowCount():
@@ -47,8 +48,8 @@ class ContextAnnotationWidget(QtWidgets.QWidget):
         self._ui.comboBoxContextMetadata.blockSignals(False)
 
         thumbnail_files = OnDiskFiles().get_all_image_files()
-
-        thumbnail_list_model = _build_list_model(thumbnail_files)
+        posix_thumbnail_files = [pathlib.PureWindowsPath(f).as_posix() for f in thumbnail_files]
+        thumbnail_list_model = _build_list_model(posix_thumbnail_files)
 
         context_files = search_for_context_data_files(location, convert_to_bytes("2MiB"))
         # Upgrade old version 0.1.0 context info files. Load version 0.2.0 context info files.
